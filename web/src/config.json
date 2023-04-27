@@ -1,0 +1,15 @@
+{
+    "server_url": "http://127.0.0.1:8080",
+    "frontend_url": "http://127.0.0.1:8080",
+    "default_language": "zh-cn",
+    "oidc": {
+        "authority": "http://127.0.0.1:8080",
+        "client_id": "account",
+        "client_secret": "client_secret",
+        "redirect_uri": "http://127.0.0.1:8080/oidc",
+        "scopes": [
+            "openid",
+            "profile"
+        ]
+    }
+}

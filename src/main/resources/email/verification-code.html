@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style th:replace="template::style"></style>
+</head>
+<body>
+<header>
+<div th:replace="~{template::logo(${logo_text})}"></div>
+</header>
+<main>
+    <h1 th:text="${title}"></h1>
+    <br>
+    <p th:text="${hi}"></p>
+    <p th:text="${greeting}">
+    </p>
+    <p style="font-weight: bold" th:text="${code}"></p>
+    <p th:text="${if_not}">
+    </p>
+    <br>
+    <p th:text="${regards}"></p>
+    <p th:text="${team}">Vankyle ID Team</p>
+</main>
+<footer th:replace="template::footer">
+</footer>
+
+</body>
+</html>

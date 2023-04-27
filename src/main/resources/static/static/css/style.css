@@ -1,0 +1,10 @@
+@media (min-width: 576px) {
+    .form-container {
+        max-width: 75%;
+    }
+}
+@media (min-width: 768px) {
+    .form-container {
+        max-width: 768px;
+    }
+}

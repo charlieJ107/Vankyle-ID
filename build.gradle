@@ -1,0 +1,79 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.0.5'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'com.vankyle'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.security:spring-security-oauth2-authorization-server:1.0.1'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.session:spring-session-data-redis'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// Custom task to build frontend assets
+tasks.register('npmBuild', Exec) {
+    // Only run if INTEGRATED_FRONTEND is set to true in the environment
+    onlyIf { System.getenv("INTEGRATED_FRONTEND") == "true" }
+    workingDir = file('web')
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        commandLine("powershell", "/C", "if(!(Test-Path node_modules)){npm install}")
+        commandLine("powershell", "/C", "npm run build")
+    } else {
+        commandLine 'sh', '-c', 'if [ ! -d "node_modules" ]; then npm install; fi'
+        commandLine 'npm', 'run', 'build'
+    }
+}
+
+// Copy the output of the npm build to the static resources directory
+tasks.register("copyIndexTemplates", Copy) {
+    dependsOn npmBuild
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
+    from file('web/build/index.html')
+    into file('build/resources/main/templates')
+}
+
+tasks.register('copyFrontendStatics', Copy) {
+    dependsOn npmBuild
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
+    from file('web/build')
+    into file('build/resources/main/static')
+
+}
+
+tasks.register('copyFrontend', Copy) {
+    dependsOn copyIndexTemplates
+    dependsOn copyFrontendStatics
+}
+// Run the npm build before the application starts
+processResources.dependsOn copyFrontend

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"></title>
+    <style th:replace="~{template::style}"></style>
+</head>
+<body>
+<header th:replace="~{template::header}">
+    <img th:src="${logo_img_url}" alt="logo" width="64" height="48" src="/static/img/logo.svg"/>
+    <span>Vankyle ID</span>
+</header>
+<main>
+    <h1 th:text="${title}"></h1>
+    <br>
+    <p th:text="${hi}"></p>
+    <p th:text="${greeting}">
+    </p>
+    <a th:href="@{${link_url}}" th:text="${link_text}"></a>
+    <p th:text="${if_not}">
+    </p>
+    <br>
+    <p th:text="${regards}"></p>
+    <p th:text="${team}"></p>
+</main>
+<footer th:replace="~{template::footer}">
+</footer>
+</body>
+</html>

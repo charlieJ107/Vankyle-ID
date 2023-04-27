@@ -1,0 +1,157 @@
+package com.vankyle.id.controllers;
+
+import com.vankyle.id.models.login.ForgotPasswordRequest;
+import com.vankyle.id.models.login.ForgotPasswordResponse;
+import com.vankyle.id.models.login.ResetPasswordRequest;
+import com.vankyle.id.models.login.ResetPasswordResponse;
+import com.vankyle.id.service.email.EmailSender;
+import com.vankyle.id.service.email.EmailTemplateService;
+import com.vankyle.id.service.security.User;
+import com.vankyle.id.service.security.UserManager;
+import com.vankyle.id.service.validation.ValidationService;
+import jakarta.mail.MessagingException;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
+
+@Controller
+public class LoginController {
+    private final EmailSender emailSender;
+    private final UserManager userManager;
+    private final EmailTemplateService emailTemplateService;
+    private final ValidationService validationService;
+    @Value("${vankyle.id.frontend-url}")
+    private String frontendUrl;
+    @Value("${vankyle.id.restful}")
+    private boolean isRestful;
+    @Value("${vankyle.id.integrated}")
+    private boolean isIntegrated;
+
+    public LoginController(
+            EmailSender emailSender,
+            UserManager userManager,
+            EmailTemplateService emailTemplateService,
+            ValidationService validationService) {
+        this.emailSender = emailSender;
+        this.userManager = userManager;
+        this.emailTemplateService = emailTemplateService;
+        this.validationService = validationService;
+    }
+
+    /**
+     * Return the MVC login page
+     *
+     * @return Login page
+     */
+    @GetMapping("/login")
+    public String login() {
+        if (isRestful) {
+            if (isIntegrated) {
+                return "index";
+            } else {
+                return String.format("redirect:%s/login", frontendUrl);
+            }
+        }
+        return "login";
+
+    }
+
+    /**
+     * Check if the reset password code is valid or not, if valid,
+     *
+     * @param code Reset password validation code
+     * @return Reset password page
+     * @see ResetPasswordResponse
+     */
+    @GetMapping("/api/reset-password")
+    public @ResponseBody ResetPasswordResponse resetPassword(@RequestParam String code) {
+        var verification = validationService.validateVerificationLinkCode(code, "reset-password");
+        var response = new ResetPasswordResponse();
+        if (verification.isValid()) {
+            response.setStatus(200);
+        } else {
+            response.setStatus(401);
+        }
+
+        return response;
+    }
+
+    /**
+     * Handle submit of the reset password
+     *
+     * @param resetPasswordRequest Reset password request
+     * @return The forgot password response
+     * @see ResetPasswordResponse
+     */
+    @PostMapping("/api/reset-password")
+    public @ResponseBody ResetPasswordResponse resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        var code = resetPasswordRequest.getCode();
+        var verification = validationService.validateVerificationLinkCode(code, "reset-password");
+        var response = new ResetPasswordResponse();
+        if (verification.isValid()) {
+            userManager.resetPassword(verification.getUsername(), resetPasswordRequest.getPassword());
+            response.setStatus(200);
+        } else {
+            response.setStatus(401);
+        }
+        return response;
+    }
+
+    /**
+     * Handle the forgot password API, send reset password email
+     *
+     * @param forgotPasswordRequest Request body
+     * @return Response body
+     */
+    @PostMapping("/api/forgot-password")
+    public @ResponseBody ForgotPasswordResponse forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        User user;
+        try {
+            if (forgotPasswordRequest.getUsername() != null) {
+                user = userManager.findByUsername(forgotPasswordRequest.getUsername());
+            } else {
+                user = userManager.findByEmail(forgotPasswordRequest.getEmail());
+            }
+        } catch (Exception e) {
+            var forgotPasswordResponse = new ForgotPasswordResponse();
+            forgotPasswordResponse.setStatus(404);
+            return forgotPasswordResponse;
+        }
+        // User found
+        var localeString = forgotPasswordRequest.getLocale();
+        if (localeString == null) {
+            localeString = "en-US";
+        }
+        var split = localeString.split("-");
+        var locale = new Locale(split[0], split[1]);
+        // Send email
+        try {
+            sendResetPasswordEmail(user, locale);
+        } catch (Exception e) {
+            // Failed to send email
+            var forgotPasswordResponse = new ForgotPasswordResponse();
+            forgotPasswordResponse.setStatus(500);
+            return forgotPasswordResponse;
+        }
+        // Email sent
+        var forgotPasswordResponse = new ForgotPasswordResponse();
+        forgotPasswordResponse.setStatus(200);
+        return forgotPasswordResponse;
+    }
+
+    private void sendResetPasswordEmail(User user, Locale locale) throws MessagingException {
+        var code = validationService.generateVerificationLinkCode(user, "reset-password");
+        var emailContent = emailTemplateService.newResetPasswordEmail(user, code, locale);
+        emailSender.sendMail(user.getEmail(), emailContent.getSubject(), emailContent.getBody());
+    }
+
+    @Data
+    public static class LoginModel {
+        private String username;
+        private String password;
+    }
+
+}

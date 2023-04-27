@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="~{layout::styles(#{error.title})}">
+    <meta charset="UTF-8">
+    <title th:text="#{error.title}"></title>
+</head>
+<body>
+<header th:insert="~{layout::header(@{/static/img/logo.svg}, #{app.name})}">
+</header>
+<main class="justify-content-center text-center mt-5 container">
+    <img alt="Error" src="/static/img/dissatisfied.svg" th:src="@{/static/img/dissatisfied.svg}" width=256 height=256/>
+    <h3 th:text="#{error.description}"></h3>
+</main>
+</body>
+</html>
