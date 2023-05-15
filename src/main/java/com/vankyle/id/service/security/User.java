@@ -24,32 +24,43 @@ public class User implements UserDetails, CredentialsContainer {
     private static final long serialVersionUID = -2446786708085434543L;
 
     private static final Log logger = LogFactory.getLog(User.class);
-    private String password;
+    private String id;
     private String username;
+    private String password;
     private Set<GrantedAuthority> authorities;
     private boolean accountNonExpired;
     private boolean accountNonLocked;
     private boolean credentialsNonExpired;
     private boolean enabled;
+    private byte[] securityStamp;
+    private boolean mfaEnabled;
+    private String name;
+    private String email;
+    private boolean emailVerified;
+    private String phone;
+    private boolean phoneVerified;
+    private String picture;
 
-    public User(String username,
-                String password,
-                boolean accountNonExpired,
-                boolean accountNonLocked,
-                boolean credentialsNonExpired,
-                boolean enabled,
-                Collection<? extends GrantedAuthority> authorities,
-                byte[] securityStamp,
-                boolean f2aEnabled,
-                String name,
-                String email,
-                boolean emailVerified,
-                String phone,
-                boolean phoneVerified,
-                String picture) {
-        this(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+    public User(
+            String id,
+            String username,
+            String password,
+            boolean accountNonExpired,
+            boolean accountNonLocked,
+            boolean credentialsNonExpired,
+            boolean enabled,
+            Collection<? extends GrantedAuthority> authorities,
+            byte[] securityStamp,
+            boolean mfaEnabled,
+            String name,
+            String email,
+            boolean emailVerified,
+            String phone,
+            boolean phoneVerified,
+            String picture) {
+        this(id, username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.securityStamp = securityStamp;
-        this.f2aEnabled = f2aEnabled;
+        this.mfaEnabled = mfaEnabled;
         this.name = name;
         this.email = email;
         this.emailVerified = emailVerified;
@@ -62,6 +73,7 @@ public class User implements UserDetails, CredentialsContainer {
      * Construct the <code>User</code> with the details required by
      * {@link org.springframework.security.authentication.dao.DaoAuthenticationProvider}.
      *
+     * @param id                    the id of the user
      * @param username              the username presented to the
      *                              <code>DaoAuthenticationProvider</code>
      * @param password              the password that should be presented to the
@@ -76,11 +88,12 @@ public class User implements UserDetails, CredentialsContainer {
      * @throws IllegalArgumentException if a <code>null</code> value was passed either as
      *                                  a parameter or as an element in the <code>GrantedAuthority</code> collection
      */
-    public User(String username, String password, boolean enabled, boolean accountNonExpired,
+    public User(String id, String username, String password, boolean enabled, boolean accountNonExpired,
                 boolean credentialsNonExpired, boolean accountNonLocked,
                 Collection<? extends GrantedAuthority> authorities) {
         Assert.isTrue(username != null && !"".equals(username) && password != null,
                 "Cannot pass null or empty values to constructor");
+        this.id = id;
         this.username = username;
         this.password = password;
         this.enabled = enabled;
@@ -88,6 +101,17 @@ public class User implements UserDetails, CredentialsContainer {
         this.credentialsNonExpired = credentialsNonExpired;
         this.accountNonLocked = accountNonLocked;
         this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
+    }
+
+    public User(UserDetails userDetails) {
+        this(null,
+                userDetails.getUsername(),
+                userDetails.getPassword(),
+                userDetails.isEnabled(),
+                userDetails.isAccountNonExpired(),
+                userDetails.isCredentialsNonExpired(),
+                userDetails.isAccountNonLocked(),
+                userDetails.getAuthorities());
     }
 
     private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {
@@ -127,16 +151,15 @@ public class User implements UserDetails, CredentialsContainer {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getName()).append(" [");
-        sb.append("Username=").append(this.username).append(", ");
-        sb.append("Password=[PROTECTED], ");
-        sb.append("Enabled=").append(this.enabled).append(", ");
-        sb.append("AccountNonExpired=").append(this.accountNonExpired).append(", ");
-        sb.append("credentialsNonExpired=").append(this.credentialsNonExpired).append(", ");
-        sb.append("AccountNonLocked=").append(this.accountNonLocked).append(", ");
-        sb.append("Granted Authorities=").append(this.authorities).append("]");
-        return sb.toString();
+        String sb = getClass().getName() + " [" +
+                "Username=" + this.username + ", " +
+                "Password=[PROTECTED], " +
+                "Enabled=" + this.enabled + ", " +
+                "AccountNonExpired=" + this.accountNonExpired + ", " +
+                "credentialsNonExpired=" + this.credentialsNonExpired + ", " +
+                "AccountNonLocked=" + this.accountNonLocked + ", " +
+                "Granted Authorities=" + this.authorities + "]";
+        return sb;
     }
 
     @Override
@@ -180,15 +203,6 @@ public class User implements UserDetails, CredentialsContainer {
         this.securityStamp = null;
     }
 
-    private byte[] securityStamp;
-    private boolean f2aEnabled;
-    private String name;
-    private String email;
-    private boolean emailVerified;
-    private String phone;
-    private boolean phoneVerified;
-    private String picture;
-
     private static class AuthorityComparator implements Comparator<GrantedAuthority>, Serializable {
 
         @Serial
@@ -219,6 +233,7 @@ public class User implements UserDetails, CredentialsContainer {
     }
 
     public static final class UserBuilder {
+        private String id;
         private String username;
         private String rawPassword;
         private List<GrantedAuthority> authorities;
@@ -227,7 +242,7 @@ public class User implements UserDetails, CredentialsContainer {
         private boolean credentialsExpired;
         private boolean disabled;
         private byte[] verificationSecret;
-        private boolean f2aEnabled = false;
+        private boolean mfaEnabled = false;
         private String name;
         private String email;
         private boolean emailVerified = false;
@@ -236,6 +251,11 @@ public class User implements UserDetails, CredentialsContainer {
         private String picture;
 
         private UserBuilder() {
+        }
+
+        public UserBuilder id(String id) {
+            this.id = id;
+            return this;
         }
 
         public UserBuilder username(String username) {
@@ -326,8 +346,8 @@ public class User implements UserDetails, CredentialsContainer {
             return this;
         }
 
-        public UserBuilder isF2aEnabled(boolean isF2aEnabled) {
-            this.f2aEnabled = isF2aEnabled;
+        public UserBuilder isMfaEnabled(boolean isMfaEnabled) {
+            this.mfaEnabled = isMfaEnabled;
             return this;
         }
 
@@ -363,6 +383,7 @@ public class User implements UserDetails, CredentialsContainer {
 
         public User build() {
             var user = new User(
+                    id,
                     username,
                     rawPassword,
                     !disabled,
@@ -373,7 +394,7 @@ public class User implements UserDetails, CredentialsContainer {
             );
             if (verificationSecret == null) withGeneratedVerificationSecret();
             user.securityStamp = verificationSecret;
-            user.f2aEnabled = f2aEnabled;
+            user.mfaEnabled = mfaEnabled;
             user.name = name;
             user.email = email;
             user.emailVerified = emailVerified;
