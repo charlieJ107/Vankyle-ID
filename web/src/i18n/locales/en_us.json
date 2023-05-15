@@ -236,5 +236,121 @@
     "close": "Close",
     "loading": "Please wait...",
     "success": "Success"
+  },
+  "admin": {
+    "user": {
+      "title": "Users",
+      "id": "ID",
+      "name": "Name",
+      "username": "Username",
+      "email": "Email",
+      "phone": "Phone",
+      "role": "Role",
+      "created_at": "Created At",
+      "updated_at": "Updated At",
+      "actions": "Actions",
+      "create": "Create User",
+      "edit": "Edit",
+      "delete": "Delete",
+      "error": "Something went wrong. ",
+      "detail": {
+        "title": "User Details",
+        "success": "User updated successfully."
+      },
+      "form": {
+        "id": "ID",
+        "name": "Name",
+        "username": "Username",
+        "password": "Password",
+        "password_not_displayed": "Password not displayed for security reasons.",
+        "authorities": "Authorities",
+        "roles": "Roles",
+        "authority": "Authority",
+        "role": "Role",
+        "action": "Action",
+        "email": "Email",
+        "phone": "Phone",
+        "email_verified": "Email Verified",
+        "phone_verified": "Phone Verified",
+        "enabled": "Enabled",
+        "accountExpired": "Account Expired",
+        "accountLocked": "Account Locked",
+        "credentialsExpired": "Credentials Expired",
+        "mfaEnabled": "MFA Enabled",
+        "submit": "Submit",
+        "cancel": "Cancel"
+
+      }
+    },
+    "client": {
+      "title": "Clients",
+      "id": "ID",
+      "client_id": "Client ID",
+      "client_secret": "Client Secret",
+      "name": "Name",
+      "actions": "Actions",
+      "create": "Create Client",
+      "edit": "Edit",
+      "delete": "Delete",
+      "error": "Something went wrong. ",
+      "detail": {
+        "title": "Client Details",
+        "success": "Client updated successfully."
+      },
+      "form": {
+        "id": "ID",
+        "client_id": "Client ID",
+        "client_secret": "Client Secret",
+        "secret_not_displayed": "Secret not displayed for security reasons.",
+        "authenticationMethods": {
+          "title": "Authentication Methods",
+          "action": "Action",
+          "name": "Name",
+          "none": "None",
+          "client_secret_basic": "Client Secret Basic",
+          "client_secret_post": "Client Secret Post",
+          "client_secret_jwt": "Client Secret JWT",
+          "private_key_jwt": "Private Key JWT"
+        },
+        "authorizationGrantTypes": {
+          "title": "Authorization Grant Types",
+          "action": "Action",
+          "name": "Name",
+          "authorization_code": "Authorization Code",
+          "implicit": "Implicit",
+          "refresh_token": "Refresh Token",
+          "client_credentials": "Client Credentials",
+          "password": "Password",
+          "jwt-bearer": "JWT Bearer"
+        },
+        "redirectUris": {
+          "title": "Redirect URIs",
+          "action": "Action",
+          "name": "Name"
+        },
+        "scopes": {
+          "title": "Scopes",
+          "action": "Action",
+          "name": "Name"
+        },
+        "clientSettings": {
+          "requireProofKey": "Require Poof Key",
+          "requireAuthorizationConsent": "Require Authorization Consent",
+          "jwkSetUrl": "JWK Set URL",
+          "leave_blank_to_use_default": "Leave blank to use default / build-in JWK set.",
+          "tokenEndpointAuthenticationSigningAlgorithm": "Token Endpoint Authentication Signing Algorithm"
+        },
+        "tokenSettings": {
+          "authorizationCodeTimeToLive": "Authorization Code Time To Live (Minutes)",
+          "accessTokenTimeToLive": "Access Token Time To Live (Minutes)",
+          "refreshTokenTimeToLive": "Refresh Token Time To Live (Minutes)",
+          "accessTokenFormat": "Access Token Format",
+          "idTokenSignatureAlgorithm": "ID Token Signature Algorithm"
+        },
+        "name": "Name",
+        "submit": "Submit",
+        "cancel": "Cancel"
+      }
+    }
   }
 }
