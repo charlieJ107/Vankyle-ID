@@ -1,11 +1,11 @@
 package com.vankyle.id.controllers;
 
+import com.vankyle.id.models.register.ConfirmEmailResponse;
 import com.vankyle.id.models.register.RegisterRequest;
 import com.vankyle.id.models.register.RegisterResponse;
 import com.vankyle.id.service.email.EmailContent;
 import com.vankyle.id.service.email.EmailSender;
 import com.vankyle.id.service.email.EmailTemplateService;
-import com.vankyle.id.models.register.ConfirmEmailResponse;
 import com.vankyle.id.service.security.User;
 import com.vankyle.id.service.security.UserManager;
 import com.vankyle.id.service.security.UsernameAlreadyExistsException;
@@ -13,7 +13,6 @@ import com.vankyle.id.service.validation.ValidationService;
 import jakarta.mail.MessagingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.Locale;
 import java.util.Random;
@@ -37,7 +36,7 @@ public class RegisterController {
         this.userManager = userManager;
     }
 
-    @PostMapping("/api/register")
+    @PostMapping("${vankyle.id.api-path}/register")
     public @ResponseBody RegisterResponse register(@RequestBody RegisterRequest request) {
         // Check if email exists
         if (userManager.existsByEmail(request.getEmail())) {
@@ -72,8 +71,14 @@ public class RegisterController {
 
         // Send activate email
         var code = validationService.generateVerificationLinkCode(user, "confirm-email");
+        Locale userLocale = new Locale("en", "US");
         var localeStrings = request.getLocale().split("-");
-        Locale userLocale = new Locale(localeStrings[0], localeStrings[1]);
+        if (localeStrings.length == 2) {
+            userLocale = new Locale(localeStrings[0], localeStrings[1]);
+        } else if (localeStrings.length == 1){
+            userLocale = new Locale(localeStrings[0]);
+        }
+
         try {
             sendActivateEmail(user, code, userLocale);
         } catch (MessagingException e) {
@@ -86,8 +91,8 @@ public class RegisterController {
         return response;
     }
 
-    @GetMapping("/api/confirm-email")
-    public @ResponseBody ConfirmEmailResponse confirmEmail(@RequestParam(required = true) String code) {
+    @GetMapping("${vankyle.id.api-path}/confirm-email")
+    public @ResponseBody ConfirmEmailResponse confirmEmail(@RequestParam String code) {
         var confirmEmailResponse = new ConfirmEmailResponse();
         var verification = validationService.validateVerificationLinkCode(code, "confirm-email");
         if (verification.isValid()) {

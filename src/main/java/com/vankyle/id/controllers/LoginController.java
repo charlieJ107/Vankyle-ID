@@ -11,7 +11,6 @@ import com.vankyle.id.service.security.UserManager;
 import com.vankyle.id.service.validation.ValidationService;
 import jakarta.mail.MessagingException;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +22,6 @@ public class LoginController {
     private final UserManager userManager;
     private final EmailTemplateService emailTemplateService;
     private final ValidationService validationService;
-    @Value("${vankyle.id.frontend-url}")
-    private String frontendUrl;
-    @Value("${vankyle.id.restful}")
-    private boolean isRestful;
-    @Value("${vankyle.id.integrated}")
-    private boolean isIntegrated;
 
     public LoginController(
             EmailSender emailSender,
@@ -42,31 +35,13 @@ public class LoginController {
     }
 
     /**
-     * Return the MVC login page
-     *
-     * @return Login page
-     */
-    @GetMapping("/login")
-    public String login() {
-        if (isRestful) {
-            if (isIntegrated) {
-                return "index";
-            } else {
-                return String.format("redirect:%s/login", frontendUrl);
-            }
-        }
-        return "login";
-
-    }
-
-    /**
      * Check if the reset password code is valid or not, if valid,
      *
      * @param code Reset password validation code
      * @return Reset password page
      * @see ResetPasswordResponse
      */
-    @GetMapping("/api/reset-password")
+    @GetMapping("${vankyle.id.api-path}/reset-password")
     public @ResponseBody ResetPasswordResponse resetPassword(@RequestParam String code) {
         var verification = validationService.validateVerificationLinkCode(code, "reset-password");
         var response = new ResetPasswordResponse();
@@ -86,7 +61,7 @@ public class LoginController {
      * @return The forgot password response
      * @see ResetPasswordResponse
      */
-    @PostMapping("/api/reset-password")
+    @PostMapping("${vankyle.id.api-path}/reset-password")
     public @ResponseBody ResetPasswordResponse resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         var code = resetPasswordRequest.getCode();
         var verification = validationService.validateVerificationLinkCode(code, "reset-password");
@@ -106,7 +81,7 @@ public class LoginController {
      * @param forgotPasswordRequest Request body
      * @return Response body
      */
-    @PostMapping("/api/forgot-password")
+    @PostMapping("${vankyle.id.api-path}/forgot-password")
     public @ResponseBody ForgotPasswordResponse forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         User user;
         try {
@@ -121,12 +96,17 @@ public class LoginController {
             return forgotPasswordResponse;
         }
         // User found
-        var localeString = forgotPasswordRequest.getLocale();
-        if (localeString == null) {
-            localeString = "en-US";
+        var locale = new Locale("en", "US");
+
+        if (forgotPasswordRequest.getLocale() != null) {
+            var split = forgotPasswordRequest.getLocale().split("-");
+            if (split.length == 2) {
+                locale = new Locale(split[0], split[1]);
+            } else if (split.length == 1) {
+                locale = new Locale(split[0]);
+            }
         }
-        var split = localeString.split("-");
-        var locale = new Locale(split[0], split[1]);
+
         // Send email
         try {
             sendResetPasswordEmail(user, locale);
