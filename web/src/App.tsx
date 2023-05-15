@@ -13,6 +13,7 @@ import {Login} from "./components/login/login";
 import {Consent} from "./components/consent/consent";
 import {Logout} from "./components/logout/logout";
 import {Account} from "./components/account";
+import {Admin} from "./components/admin";
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword/>}/>
                 <Route path="/confirm-email" element={<ConfirmEmail/>}/>
                 <Route path="/account/*" element={<Account/>}/>
+                <Route path="/admin/*" element={<Admin/>}/>
                 <Route path="/logout" element={<Logout/>}/>
                 <Route path="/oidc" element={<Oidc/>}/>
                 <Route path="/error" element={<Error/>}/>

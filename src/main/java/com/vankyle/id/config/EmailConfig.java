@@ -24,17 +24,6 @@ public class EmailConfig {
         return new NoOpEmailSender();
     }
 
-    @Bean
-    public ClassLoaderTemplateResolver emailTemplateResolver() {
-        ClassLoaderTemplateResolver emailTemplateResolver = new ClassLoaderTemplateResolver();
-        emailTemplateResolver.setPrefix("email/");
-        emailTemplateResolver.setSuffix(".html");
-        emailTemplateResolver.setTemplateMode(TemplateMode.HTML);
-        emailTemplateResolver.setCharacterEncoding("UTF-8");
-        emailTemplateResolver.setOrder(1);
-        emailTemplateResolver.setCheckExistence(true);
-        return emailTemplateResolver;
-    }
 
     @Bean
     public EmailTemplateService thymeleafEmailTemplateService(
