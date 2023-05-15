@@ -151,7 +151,7 @@ public class User implements UserDetails, CredentialsContainer {
 
     @Override
     public String toString() {
-        String sb = getClass().getName() + " [" +
+        return getClass().getName() + " [" +
                 "Username=" + this.username + ", " +
                 "Password=[PROTECTED], " +
                 "Enabled=" + this.enabled + ", " +
@@ -159,7 +159,6 @@ public class User implements UserDetails, CredentialsContainer {
                 "credentialsNonExpired=" + this.credentialsNonExpired + ", " +
                 "AccountNonLocked=" + this.accountNonLocked + ", " +
                 "Granted Authorities=" + this.authorities + "]";
-        return sb;
     }
 
     @Override
