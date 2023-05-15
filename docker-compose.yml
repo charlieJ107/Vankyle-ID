@@ -1,17 +1,28 @@
 version: "3"
 services:
-  web:
+  frontend:
+    build: ./web
+    environment:
+      - REACT_APP_API_URL=http://127.0.0.1
+
+  backend:
     build: .
     environment:
-        - DB_HOST=db
-        - DB_USER=postgres
-        - DB_PASSWORD=postgres
-        - DB_NAME=vankyle
-        - BASE_URL=http://0.0.0.0:8080
-    ports:
-      - "8080:8080"
+      - DB_HOST=db
+      - DB_NAME=vankyle
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - BASE_URL=http://127.0.0.1
     depends_on:
       - db
+
+  reserve-proxy:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
   db:
     image: postgres:latest
     environment:
