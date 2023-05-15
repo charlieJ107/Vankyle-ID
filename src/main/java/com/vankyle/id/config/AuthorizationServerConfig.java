@@ -63,16 +63,17 @@ public class AuthorizationServerConfig {
         RequestMatcher endpointsMatcher = authorizationServerConfigurer
                 .getEndpointsMatcher();
 
-        http
-                .securityMatcher(endpointsMatcher)
+        http.securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(authorize ->
                         authorize.anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .exceptionHandling(exceptions ->
-                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                        exceptions.authenticationEntryPoint(new JsonResponseAuthenticationEntryPoint("/login"))
                 )
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+                .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
+                        httpSecurityOAuth2ResourceServerConfigurer.jwt()
+                                .jwtAuthenticationConverter(new RoleBasedJwtAuthenticationConverter()))
                 .apply(authorizationServerConfigurer);
         return http.build();
     }
@@ -145,4 +146,18 @@ public class AuthorizationServerConfig {
         return new JpaOAuth2AuthorizationConsentService(consentRepository, registeredClientRepository);
     }
 
+    @Bean
+    OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
+        return context -> {
+            if (context.getTokenType() == OAuth2TokenType.ACCESS_TOKEN) {
+                Authentication principal = context.getPrincipal();
+                Set<String> authorities = principal.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .filter(authority -> authority.startsWith("ROLE_"))
+                        .map(authority -> authority.substring(5))
+                        .collect(Collectors.toSet());
+                context.getClaims().claim("roles", authorities);
+            }
+        };
+    }
 }
