@@ -14,6 +14,8 @@ import org.springframework.lang.NonNull;
 public class EmailProperties {
     @NonNull
     private boolean enabled;
+    @NonNull
+    private String base_url;
     @Nullable
     private String from;
 

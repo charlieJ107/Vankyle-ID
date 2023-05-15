@@ -1,7 +1,7 @@
 package com.vankyle.id.config.handlers;
 
-import com.vankyle.id.models.authorization.AuthorizationErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vankyle.id.models.authorization.AuthorizationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
@@ -23,9 +23,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
-public class AuthorizationEndpointHandler implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
-    private final RedirectStrategy redirectStrategy = new RestfulRedirectStrategy();
-    private static final Log logger = LogFactory.getLog(AuthorizationEndpointHandler.class);
+public class JsonResponseAuthorizationEndpointHandler implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
+    private final RedirectStrategy redirectStrategy = new JsonResponseRedirectStrategy();
+    private static final Log logger = LogFactory.getLog(JsonResponseAuthorizationEndpointHandler.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -36,6 +36,8 @@ public class AuthorizationEndpointHandler implements AuthenticationSuccessHandle
      * @param authentication the <tt>Authentication</tt> object which was created during
      *                       the authentication process.
      * @throws IOException Throws when error on read/write request and response stream.
+     * @see OAuth2AuthorizationEndpointFilter
+     * #sendAuthorizationResponse
      */
     @Override
     public void onAuthenticationSuccess(
@@ -71,6 +73,8 @@ public class AuthorizationEndpointHandler implements AuthenticationSuccessHandle
      * @param exception the exception which was thrown to reject the authentication
      * request.
      * @throws IOException Throws when error on read/write request and response stream.
+     * @see OAuth2AuthorizationEndpointFilter
+     * #sendErrorResponse
      */
     @Override
     public void onAuthenticationFailure(
@@ -124,7 +128,7 @@ public class AuthorizationEndpointHandler implements AuthenticationSuccessHandle
             String errorMessage
     ) throws IOException {
         if (request.getHeader("Accept") != null &&
-                request.getHeader("Accept").equals(MediaType.APPLICATION_JSON_VALUE)) {
+                request.getHeader("Accept").contains(MediaType.APPLICATION_JSON_VALUE)) {
             response.setStatus(HttpServletResponse.SC_OK);
             AuthorizationErrorResponse res = new AuthorizationErrorResponse();
             res.setStatus(HttpStatus.BAD_REQUEST.value());
