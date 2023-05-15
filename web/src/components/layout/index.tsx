@@ -6,7 +6,7 @@ import {User} from "oidc-client-ts";
 import {Brand} from "./brand";
 import {NavPersona} from "./navPersona";
 import {Link, useNavigate} from "react-router-dom";
-import config from "../../config.json"
+import config from "../../config/config"
 
 export function Layout(props: { children: React.ReactNode }) {
     const {t} = useTranslation();
@@ -15,9 +15,9 @@ export function Layout(props: { children: React.ReactNode }) {
         user?: User;
     }>({
         signedIn: false,
-        // For testing purposes, uncomment the following line to simulate a logged in user
+        // For testing purposes, uncomment the following line to simulate a logged-in user
         // signedIn: true,
-        // user: new User({
+        // user: new Users({
         //     access_token: "", token_type: "",
         //     profile: {
         //         sub: "kale",
@@ -39,8 +39,6 @@ export function Layout(props: { children: React.ReactNode }) {
                     user: user
                 });
             }
-        }).catch((error) => {
-            console.error(error);
         });
     }, [setState]);
     return (
@@ -74,7 +72,7 @@ export function Layout(props: { children: React.ReactNode }) {
                                     <NavPersona user={state.user}/>
                                 </Nav.Item> :
                                 <Nav.Item className={"d-flex align-items-center"}>
-                                    <SignInButton signedIn={state.signedIn}/>
+                                    <SignInButton/>
                                 </Nav.Item>}
                         </div>
 
@@ -86,13 +84,13 @@ export function Layout(props: { children: React.ReactNode }) {
     );
 }
 
-const SignInButton = (props: { signedIn: boolean }) => {
+const SignInButton = () => {
     const {t} = useTranslation();
     const navigate = useNavigate();
     return (
         <>
             <Button className={"me-3"}
-                    onClick={() => window.location.href = `${config.server_url}/login`}>{t("layout.sign_in")}</Button>
+                    onClick={() => window.location.href = `${config.public_url}/login`}>{t("layout.sign_in")}</Button>
             <Button variant={"outline-primary"} onClick={() => navigate("/register")}>{t("layout.sign_up")}</Button>
         </>
     );

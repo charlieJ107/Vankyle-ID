@@ -2,9 +2,8 @@ import {Alert, Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
 import "../../form-container.css"
-import config from "../../config.json"
+import config from "../../config/config"
 import {useNavigate} from "react-router-dom";
-import {userManager} from "../../auth/userManager";
 
 export function Login() {
     const [error, setError] = useState<string | null>(null);
@@ -112,7 +111,7 @@ function postLogin({username, password, rememberMe}: { username: string, passwor
     if (rememberMe){
         urlSearchParams.append("rememberMe", "on");
     }
-    return fetch(`${config.server_url}/api/login?${urlSearchParams.toString()}`, {
+    return fetch(`${config.api_url}/login?${urlSearchParams.toString()}`, {
         method: "POST",
         headers: {
             "Accept": "application/json",
