@@ -2,11 +2,11 @@ import React from "react";
 import {Alert, Button, Container, Form} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
-import {passwordPattern} from "../../../utils/regex";
-import config from "../../../config.json";
+import {passwordPattern} from "../../../../utils/regex";
+import config from "../../../../config/config";
 import {User} from "oidc-client-ts";
-import {userManager} from "../../../auth/userManager";
-import "../../../form-container.css";
+import {userManager} from "../../../../auth/userManager";
+import "../../../../form-container.css";
 
 export function Password() {
     const [currentPassword, setCurrentPassword] =
@@ -118,7 +118,7 @@ export function Password() {
 }
 
 function putPasswordUpdate(currentPassword: string, newPassword: string, user: User) {
-    return fetch(`${config.server_url}/api/account/password`, {
+    return fetch(`${config.api_url}/account/password`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
