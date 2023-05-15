@@ -75,7 +75,7 @@ public class RegisterController {
         var localeStrings = request.getLocale().split("-");
         if (localeStrings.length == 2) {
             userLocale = new Locale(localeStrings[0], localeStrings[1]);
-        } else if (localeStrings.length == 1){
+        } else if (localeStrings.length == 1) {
             userLocale = new Locale(localeStrings[0]);
         }
 
