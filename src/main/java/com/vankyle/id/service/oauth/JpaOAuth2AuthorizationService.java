@@ -143,7 +143,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
 
     private OAuth2Authorization toOAuth2Authorization(Authorization authorizationEntity) {
         RegisteredClient registeredClient = registeredClientRepository
-                .findByClientId(authorizationEntity.getRegisteredClientId());
+                .findById(authorizationEntity.getRegisteredClientId());
         if (registeredClient == null) {
             throw new DataRetrievalFailureException(
                     "The RegisteredClient with id '" +
