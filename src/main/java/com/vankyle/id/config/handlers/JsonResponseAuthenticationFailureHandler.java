@@ -1,7 +1,7 @@
 package com.vankyle.id.config.handlers;
 
-import com.vankyle.id.models.login.AuthenticationResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vankyle.id.models.login.AuthenticationResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,17 +11,17 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 
 import java.io.IOException;
 
-public class SecurityAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class JsonResponseAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public SecurityAuthenticationFailureHandler() {
+    public JsonResponseAuthenticationFailureHandler() {
         super();
-        setRedirectStrategy(new RestfulRedirectStrategy());
+        setRedirectStrategy(new JsonResponseRedirectStrategy());
     }
-    public SecurityAuthenticationFailureHandler(String defaultFailureUrl) {
+    public JsonResponseAuthenticationFailureHandler(String defaultFailureUrl) {
         super(defaultFailureUrl);
-        setRedirectStrategy(new RestfulRedirectStrategy());
+        setRedirectStrategy(new JsonResponseRedirectStrategy());
     }
 
     /**
@@ -38,8 +38,8 @@ public class SecurityAuthenticationFailureHandler extends SimpleUrlAuthenticatio
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
         logger.debug(exception.getMessage());
-        if (request.getHeader("Accept").equals(MediaType.APPLICATION_JSON_VALUE)) {
-            response.setStatus(HttpServletResponse.SC_OK);
+        if (request.getHeader("Accept").contains(MediaType.APPLICATION_JSON_VALUE)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setCharacterEncoding("UTF-8");
             AuthenticationResponse res = new AuthenticationResponse();
             res.setStatus(401);

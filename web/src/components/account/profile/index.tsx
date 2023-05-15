@@ -3,15 +3,15 @@ import {useTranslation} from "react-i18next";
 
 import React, {useEffect} from "react";
 import {User} from "oidc-client-ts";
-import userIcon from "../../img/user.svg";
-import {userManager} from "../../auth/userManager";
-import checkedIcon from "../../img/checkmark_filled.svg";
-import closedIcon from "../../img/closed_filled.svg";
+import userIcon from "../../../img/user.svg";
+import {userManager} from "../../../auth/userManager";
+import checkedIcon from "../../../img/checkmark_filled.svg";
+import closedIcon from "../../../img/closed_filled.svg";
 import {Email} from "./email";
 import {Picture} from "./picture";
 import {Info} from "./info";
 import {Phone} from "./phone";
-import {Loading} from "../shared/loading";
+import {Loading} from "../../shared/loading";
 
 export function Profile() {
     const [user, setUser] = React.useState<User | null>(

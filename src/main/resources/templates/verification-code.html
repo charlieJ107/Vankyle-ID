@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <title th:text="${title}"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style th:replace="template::style"></style>
+    <style th:replace="layout::style"></style>
 </head>
 <body>
-<header>
-<div th:replace="~{template::logo(${logo_text})}"></div>
+<header th:replace="~{layout::header}">
 </header>
 <main>
     <h1 th:text="${title}"></h1>
@@ -20,10 +19,10 @@
     <p th:text="${if_not}">
     </p>
     <br>
-    <p th:text="${regards}"></p>
-    <p th:text="${team}">Vankyle ID Team</p>
+    <p th:text="#{email.regards}"></p>
+    <p th:text="#{email.team}">Vankyle ID Team</p>
 </main>
-<footer th:replace="template::footer">
+<footer th:replace="layout::footer">
 </footer>
 
 </body>

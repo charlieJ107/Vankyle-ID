@@ -1,7 +1,7 @@
 import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 import {Container} from "react-bootstrap";
-import config from "../../config.json";
+import config from "../../config/config";
 import {Loading} from "../shared/loading";
 import dissatisfied from "../../img/dissatisfied.svg";
 import checkmarkFilled from "../../img/checkmark_filled.svg";
@@ -60,7 +60,7 @@ export function ConfirmEmail() {
 }
 
 function postVerificationCode(code: string) {
-    return fetch(`${config.server_url}/api/confirm-email?code=${code}`, {
+    return fetch(`${config.api_url}/confirm-email?code=${code}`, {
         method: "GET"
     }).then((response) => {
         if (response.ok) {

@@ -1,7 +1,7 @@
 package com.vankyle.id.service.email;
 
 import com.vankyle.id.service.security.User;
-import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -13,36 +13,34 @@ public class ThymeleafEmailTemplateService implements EmailTemplateService {
     private final TemplateEngine templateEngine;
     private final Environment environment;
 
-    @Setter
-    private String team = "Vankyle ID";
-
-
     public ThymeleafEmailTemplateService(TemplateEngine templateEngine,
                                          Environment environment) {
         this.templateEngine = templateEngine;
         this.environment = environment;
     }
 
+    @Value("${vankyle.id.name}")
+    private String appName;
     @Override
     public EmailContent newConfirmEmail(User user, String code, Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("email", locale);
+        ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
         Context context = getPublicCodeContext(user, code, bundle);
         var title = bundle.getString("email.verification.title");
         context.setVariable("title", title);
-        context.setVariable("greeting", String.format(bundle.getString("email.verification.greeting"), team));
+        context.setVariable("greeting", String.format(bundle.getString("email.verification.greeting"), appName));
         return new EmailContent(title,
                 templateEngine.process("verification-code", context));
     }
 
     @Override
     public EmailContent newActivateEmail(User user, String verificationCode, Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("email", locale);
+        ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
         Context context = getPublicUrlContext(user, verificationCode, bundle, "confirm-email");
         var title = bundle.getString("email.activate.title");
         context.setVariable("title", title);
-        context.setVariable("greeting", String.format(bundle.getString("email.activate.greeting"), team));
+        context.setVariable("greeting", String.format(bundle.getString("email.activate.greeting"), appName));
         context.setVariable("link_text", bundle.getString("email.activate.link"));
-        context.setVariable("if_not", String.format(bundle.getString("email.activate.if_not"), team));
+        context.setVariable("if_not", String.format(bundle.getString("email.activate.if_not"), appName));
         return new EmailContent(title,
                 templateEngine.process("verification-link", context));
     }
@@ -50,13 +48,13 @@ public class ThymeleafEmailTemplateService implements EmailTemplateService {
 
     @Override
     public EmailContent newResetPasswordEmail(User user, String code, Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("email", locale);
+        ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
         Context context = getPublicUrlContext(user, code, bundle, "reset-password");
         var title = bundle.getString("email.password.reset.title");
         context.setVariable("title", title);
-        context.setVariable("greeting", String.format(bundle.getString("email.password.reset.greeting"), team));
+        context.setVariable("greeting", String.format(bundle.getString("email.password.reset.greeting"), appName));
         context.setVariable("link_text", bundle.getString("email.password.reset.link"));
-        context.setVariable("if_not", String.format(bundle.getString("email.password.reset.if_not"), team));
+        context.setVariable("if_not", String.format(bundle.getString("email.password.reset.if_not"), appName));
         return new EmailContent(title,
                 templateEngine.process("verification-link", context));
     }
@@ -68,7 +66,7 @@ public class ThymeleafEmailTemplateService implements EmailTemplateService {
 
     private Context getPublicUrlContext(User user, String verificationCode, ResourceBundle bundle, String purpose) {
         Context context = getPublicGreetingContext(user, bundle);
-        String url = environment.getProperty("vankyle.id.base_url", "http://localhost:8080") +
+        String url = environment.getProperty("vankyle.id.mail.base-url") +
                 String.format("/%s?code=%s", purpose, verificationCode);
         context.setVariable("link_url", url);
         return context;
@@ -88,13 +86,8 @@ public class ThymeleafEmailTemplateService implements EmailTemplateService {
         } else {
             context.setVariable("hi", String.format(hi, user.getName()));
         }
-        var baseUrl = environment.getProperty("vankyle.id.base_url", "http://localhost:8080");
+        var baseUrl = environment.getProperty("vankyle.id.mail.base-url");
         context.setVariable("base_url", baseUrl);
-        context.setVariable("regards", bundle.getString("email.regards"));
-        context.setVariable("noreply", bundle.getString("email.noreply"));
-        context.setVariable("team", String.format(bundle.getString("email.team"), team));
-        context.setVariable("logo_text", bundle.getString("email.app.name"));
-        context.setVariable("logo_img_url", baseUrl+ "/static/img/logo.svg");
         return context;
     }
 }

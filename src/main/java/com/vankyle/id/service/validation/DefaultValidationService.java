@@ -53,8 +53,8 @@ public class DefaultValidationService implements ValidationService {
         }
         byte[] verificationSecret = null;
         var user = userRepository.findByUsername(username);
-        if (user != null && user.getVerificationSecret() != null) {
-            verificationSecret = user.getVerificationSecret();
+        if (user != null && user.getSecurityStamp() != null) {
+            verificationSecret = user.getSecurityStamp();
             success = true;
         } else {
             verificationSecret = fakeSecret;

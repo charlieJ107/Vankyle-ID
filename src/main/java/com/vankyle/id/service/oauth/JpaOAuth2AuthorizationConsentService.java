@@ -32,7 +32,7 @@ public class JpaOAuth2AuthorizationConsentService implements OAuth2Authorization
 
     private OAuth2AuthorizationConsent toObject(AuthorizationConsent authorizationConsent) {
         String registeredClientId = authorizationConsent.getRegisteredClientId();
-        RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(registeredClientId);
+        RegisteredClient registeredClient = this.registeredClientRepository.findById(registeredClientId);
         if (registeredClient == null) {
             throw new DataRetrievalFailureException(
                     "The RegisteredClient with id '" + registeredClientId + "' was not found in the RegisteredClientRepository.");

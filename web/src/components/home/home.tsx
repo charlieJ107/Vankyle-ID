@@ -3,7 +3,7 @@ import {Button, Col, Container, Row} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import {Layout} from "../layout";
 import {userManager} from "../../auth/userManager";
-import config from "../../config.json"
+import config from "../../config/config"
 import {User} from "oidc-client-ts";
 import {Navigate, useNavigate} from "react-router-dom";
 
@@ -11,11 +11,7 @@ export function Home() {
     const [user, setUser] = useState<User | null>(null);
     useEffect(() => {
         userManager.getUser().then(oidc => {
-            if (oidc === null) {
-                userManager.signinSilent().then(oidc => {
-                    setUser(oidc);
-                }).catch(()=>setUser(null));
-            } else {
+            if (oidc) {
                 setUser(oidc);
             }
         });
@@ -30,7 +26,7 @@ export function Home() {
                     <p className={"mt-3"}>{t("home.introduction")}</p>
                     <Row className={"mt-3"}>
                         <Col className={"text-end"}>
-                            <Button onClick={() => window.location.href = `${config.server_url}/login`}>
+                            <Button onClick={() => window.location.href = `${config.public_url}/login`}>
                                 {t("home.sign_in")}
                             </Button>
                         </Col>

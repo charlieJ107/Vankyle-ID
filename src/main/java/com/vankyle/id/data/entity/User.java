@@ -3,10 +3,8 @@ package com.vankyle.id.data.entity;
 import com.vankyle.id.data.utils.GrantedAuthorityConverter;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -36,8 +34,8 @@ public class User {
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @Convert(converter = GrantedAuthorityConverter.class)
     private Set<GrantedAuthority> authorities;
-    private byte[] verificationSecret;
-    private boolean isF2aEnabled;
+    private byte[] securityStamp;
+    private boolean isMfaEnabled;
     private String name;
     private String email;
     private boolean emailVerified;
@@ -45,16 +43,4 @@ public class User {
     private boolean phoneVerified;
     private String picture;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        User user = (User) o;
-        return getId() != null && Objects.equals(getId(), user.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

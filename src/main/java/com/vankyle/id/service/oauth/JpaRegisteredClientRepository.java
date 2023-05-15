@@ -16,8 +16,8 @@ import org.springframework.util.Assert;
 
 public class JpaRegisteredClientRepository implements RegisteredClientRepository {
 
-    private final ClientRepository clientRepository;
-    private final PasswordEncoder passwordEncoder;
+    protected final ClientRepository clientRepository;
+    protected final PasswordEncoder passwordEncoder;
 
     private static final Log logger = LogFactory.getLog(JpaRegisteredClientRepository.class);
 
@@ -31,7 +31,9 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
         Assert.notNull(registeredClient, "registeredClient cannot be null");
         logger.debug("Saving registered client: " + registeredClient);
         Client client = toClientEntity(registeredClient);
-        clientRepository.save(client);
+        client = clientRepository.save(client);
+        registeredClient = toRegisteredClient(client);
+        Assert.notNull(registeredClient.getId(), "Saved registered client must have an id");
     }
 
     @Override
@@ -50,25 +52,30 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
         return client == null ? null : toRegisteredClient(client);
     }
 
-    private RegisteredClient toRegisteredClient(Client client) {
-        return RegisteredClient.withId(client.getClientId())
+    protected RegisteredClient toRegisteredClient(Client client) {
+        return RegisteredClient.withId(client.getId())
                 .clientId(client.getClientId())
-                .clientSecret(passwordEncoder.encode(client.getClientSecret()))
+                .clientIdIssuedAt(client.getClientIdIssuedAt())
+                .clientSecret(client.getClientSecret())
+                .clientSecretExpiresAt(client.getClientSecretExpiresAt())
+                .clientName(client.getClientName())
                 .clientAuthenticationMethods(clientAuthenticationMethods ->
                         clientAuthenticationMethods.addAll(client.getClientAuthenticationMethods()))
                 .authorizationGrantTypes(authorizationGrantTypes ->
                         authorizationGrantTypes.addAll(client.getAuthorizationGrantTypes()))
-                .scopes(scopes -> scopes.addAll(client.getScopes()))
                 .redirectUris(redirectUris -> redirectUris.addAll(client.getRedirectUris()))
+                .scopes(scopes -> scopes.addAll(client.getScopes()))
                 .clientSettings(toClientSettings(client.getClientSettings()))
                 .tokenSettings(toTokenSettings(client.getTokenSettings()))
                 .build();
     }
 
-    private Client toClientEntity(RegisteredClient registeredClient) {
+    protected Client toClientEntity(RegisteredClient registeredClient) {
         Client client = new Client();
+        client.setId(registeredClient.getId());
         client.setClientId(registeredClient.getClientId());
-        client.setClientSecret(registeredClient.getClientSecret());
+        client.setClientName(registeredClient.getClientName());
+        client.setClientSecret(passwordEncoder.encode(registeredClient.getClientSecret()));
         client.setClientAuthenticationMethods(registeredClient.getClientAuthenticationMethods());
         client.setAuthorizationGrantTypes(registeredClient.getAuthorizationGrantTypes());
         client.setScopes(registeredClient.getScopes());
@@ -79,7 +86,7 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
     }
 
 
-    private ClientSettings toClientSettings(ClientSettingsData data) {
+    protected ClientSettings toClientSettings(ClientSettingsData data) {
         var builder = ClientSettings.withSettings(data.getClientSettings())
                 .requireAuthorizationConsent(data.isRequireAuthorizationConsent())
                 .requireProofKey(data.isRequireProofKey());
@@ -92,7 +99,7 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
         return builder.build();
     }
 
-    private TokenSettings toTokenSettings(TokenSettingsData data) {
+    protected TokenSettings toTokenSettings(TokenSettingsData data) {
         return TokenSettings.builder()
                 .accessTokenTimeToLive(data.getAccessTokenTimeToLive())
                 .refreshTokenTimeToLive(data.getRefreshTokenTimeToLive())
@@ -103,7 +110,7 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
                 .build();
     }
 
-    private ClientSettingsData toClientSettingsData(ClientSettings settings) {
+    protected ClientSettingsData toClientSettingsData(ClientSettings settings) {
         var data = new ClientSettingsData();
         data.setClientSettings(settings.getSettings());
         data.setJwkSetUri(settings.getJwkSetUrl());
@@ -113,7 +120,7 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
         return data;
     }
 
-    private TokenSettingsData toTokenSettingsData(TokenSettings settings) {
+    protected TokenSettingsData toTokenSettingsData(TokenSettings settings) {
         var data = new TokenSettingsData();
         data.setAccessTokenTimeToLive(settings.getAccessTokenTimeToLive());
         data.setRefreshTokenTimeToLive(settings.getRefreshTokenTimeToLive());

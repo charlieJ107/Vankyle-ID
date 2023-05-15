@@ -1,6 +1,6 @@
 package com.vankyle.id.config;
 
-import com.vankyle.id.config.handlers.AuthorizationEndpointHandler;
+import com.vankyle.id.config.handlers.JsonResponseAuthorizationEndpointHandler;
 import com.vankyle.id.config.jose.JsonWebKeys;
 import com.vankyle.id.config.properties.ApplicationProperties;
 import com.vankyle.id.data.repository.AuthorizationConsentRepository;
@@ -56,10 +56,8 @@ public class AuthorizationServerConfig {
         authorizationServerConfigurer
                 .authorizationEndpoint(authorizationEndpoint ->
                             authorizationEndpoint.consentPage("/consent")
-                                    .authorizationResponseHandler(new AuthorizationEndpointHandler())
-                                    .errorResponseHandler(new AuthorizationEndpointHandler())
-
-
+                                    .authorizationResponseHandler(new JsonResponseAuthorizationEndpointHandler())
+                                    .errorResponseHandler(new JsonResponseAuthorizationEndpointHandler())
                 )
                 .oidc(Customizer.withDefaults()); // Enable OpenID Connect 1.0
         RequestMatcher endpointsMatcher = authorizationServerConfigurer

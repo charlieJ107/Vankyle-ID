@@ -19,9 +19,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.userdetails.cache.NullUserCache;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class JpaUserManager implements UserManager {
     private final UserRepository userRepository;
@@ -50,8 +52,11 @@ public class JpaUserManager implements UserManager {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[64];
         random.nextBytes(bytes);
-        entity.setVerificationSecret(bytes);
-        userRepository.save(entity);
+        entity.setSecurityStamp(bytes);
+        entity = userRepository.save(entity);
+        user = userEntityToUser(entity);
+        userCache.putUserInCache(user);
+        Assert.notNull(user, "user cannot be null");
     }
 
     @Override
@@ -67,7 +72,9 @@ public class JpaUserManager implements UserManager {
         entity.setAccountNonLocked(user.isAccountNonLocked());
         entity.setCredentialsNonExpired(user.isCredentialsNonExpired());
         entity.setEnabled(user.isEnabled());
-        userRepository.save(entity);
+        entity = userRepository.save(entity);
+        user = userEntityToUser(entity);
+        userCache.putUserInCache(user);
     }
 
     @Override
@@ -84,7 +91,7 @@ public class JpaUserManager implements UserManager {
                     "Can't change password as no Authentication object found in context " + "for current user.");
         }
         var user = userRepository.findByUsername(currentUser.getName());
-        if (user == null){
+        if (user == null) {
             throw new AccessDeniedException("No such user");
         }
         String username = currentUser.getName();
@@ -142,6 +149,7 @@ public class JpaUserManager implements UserManager {
 
     private UserDetails entityToUserDetails(com.vankyle.id.data.entity.User user) {
         return new User(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword(),
                 user.isAccountNonExpired(),
@@ -176,8 +184,8 @@ public class JpaUserManager implements UserManager {
 
     private void userToUserEntity(User user, com.vankyle.id.data.entity.User entity) {
         userDetailsToEntity(user, entity);
-        entity.setVerificationSecret(user.getSecurityStamp());
-        entity.setF2aEnabled(user.isF2aEnabled());
+        entity.setSecurityStamp(user.getSecurityStamp());
+        entity.setMfaEnabled(user.isMfaEnabled());
         entity.setName(user.getName());
         entity.setEmail(user.getEmail());
         entity.setEmailVerified(user.isEmailVerified());
@@ -188,6 +196,7 @@ public class JpaUserManager implements UserManager {
 
     private User userEntityToUser(com.vankyle.id.data.entity.User entity) {
         return new User(
+                entity.getId(),
                 entity.getUsername(),
                 entity.getPassword(),
                 entity.isAccountNonExpired(),
@@ -195,8 +204,8 @@ public class JpaUserManager implements UserManager {
                 entity.isCredentialsNonExpired(),
                 entity.isEnabled(),
                 entity.getAuthorities(),
-                entity.getVerificationSecret(),
-                entity.isF2aEnabled(),
+                entity.getSecurityStamp(),
+                entity.isMfaEnabled(),
                 entity.getName(),
                 entity.getEmail(),
                 entity.isEmailVerified(),
@@ -238,7 +247,11 @@ public class JpaUserManager implements UserManager {
         }
         entity = userToUserEntity(user);
         entity.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(entity);
+        entity = userRepository.save(entity);
+        user.setId(entity.getId());
+        if (userCache != null) {
+            userCache.putUserInCache(user);
+        }
     }
 
     @Override
@@ -252,14 +265,20 @@ public class JpaUserManager implements UserManager {
         entity.setAccountNonLocked(user.isAccountNonLocked());
         entity.setCredentialsNonExpired(user.isCredentialsNonExpired());
         entity.setEnabled(user.isEnabled());
-        entity.setF2aEnabled(user.isF2aEnabled());
+        entity.setMfaEnabled(user.isMfaEnabled());
         entity.setEmail(user.getEmail());
         entity.setEmailVerified(user.isEmailVerified());
         entity.setPhone(user.getPhone());
         entity.setPhoneVerified(user.isPhoneVerified());
         entity.setPicture(user.getPicture());
         entity.setName(user.getName());
-        userRepository.saveAndFlush(entity);
+        entity.getAuthorities().clear();
+        entity.getAuthorities().addAll(user.getAuthorities());
+        entity = userRepository.saveAndFlush(entity);
+        user = userEntityToUser(entity);
+        if (userCache != null) {
+            userCache.putUserInCache(user);
+        }
     }
 
     @Override
@@ -269,6 +288,10 @@ public class JpaUserManager implements UserManager {
 
     @Override
     public User findByUsername(String username) {
+        var user = userCache.getUserFromCache(username);
+        if (user != null) {
+            return new User(user);
+        }
         var userEntity = userRepository.findByUsername(username);
         return userEntityToUser(userEntity);
     }
@@ -280,6 +303,21 @@ public class JpaUserManager implements UserManager {
             throw new UsernameNotFoundException("User not found");
         }
         return userEntityToUser(entity);
+    }
+
+    @Override
+    public User findById(String id) {
+        var entity = userRepository.findById(id);
+        if (entity.isEmpty()) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return userEntityToUser(entity.get());
+    }
+
+    @Override
+    public Set<User> findAllUsers() {
+        var entities = userRepository.findAll();
+        return entities.stream().map(this::userEntityToUser).collect(Collectors.toSet());
     }
 
     @Override
@@ -297,12 +335,21 @@ public class JpaUserManager implements UserManager {
 
     @Override
     public void resetPassword(User user, String password) {
+        if (StringUtils.hasText(user.getId())) {
+            var entity = userRepository.findById(user.getId());
+            if (entity.isPresent()) {
+                entity.get().setPassword(passwordEncoder.encode(password));
+                userRepository.save(entity.get());
+                return;
+            }
+        }
         var entity = userRepository.findByUsername(user.getUsername());
         if (entity == null) {
             throw new UsernameNotFoundException("User not found");
         }
         entity.setPassword(passwordEncoder.encode(password));
         userRepository.save(entity);
+
     }
 
     @Override
@@ -355,7 +402,7 @@ public class JpaUserManager implements UserManager {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[64];
         random.nextBytes(bytes);
-        entity.setVerificationSecret(bytes);
+        entity.setSecurityStamp(bytes);
         userRepository.save(entity);
     }
 }

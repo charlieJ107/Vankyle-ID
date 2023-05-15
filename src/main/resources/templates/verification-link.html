@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"></title>
+    <style th:replace="~{layout::style}"></style>
+</head>
+<body>
+<header th:replace="~{layout::header}">
+    <img alt="logo" width="64" height="48"
+         src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaWQ9Imljb24iIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6bm9uZTt9PC9zdHlsZT48L2RlZnM+PHRpdGxlLz48cmVjdCBoZWlnaHQ9IjIiIHdpZHRoPSIyIiB4PSIxMCIgeT0iOSIvPjxwYXRoIGQ9Ik0xOCwyM0gxNFY5aDRhNCw0LDAsMCwxLDQsNHY2QTQsNCwwLDAsMSwxOCwyM1ptLTItMmgyYTIsMiwwLDAsMCwyLTJWMTNhMiwyLDAsMCwwLTItMkgxNloiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDApIi8+PHJlY3QgaGVpZ2h0PSIxMCIgd2lkdGg9IjIiIHg9IjEwIiB5PSIxMyIvPjxyZWN0IGNsYXNzPSJjbHMtMSIgZGF0YS1uYW1lPSImbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OyIgaGVpZ2h0PSIzMiIgaWQ9Il9UcmFuc3BhcmVudF9SZWN0YW5nbGVfIiB3aWR0aD0iMzIiLz48L3N2Zz4="/>
+    <span>Vankyle ID</span>
+</header>
+<main>
+    <h1 th:text="${title}"></h1>
+    <br>
+    <p th:text="${hi}"></p>
+    <p th:text="${greeting}">
+    </p>
+    <a th:href="@{${link_url}}" th:text="${link_text}"></a>
+    <p th:text="${if_not}">
+    </p>
+    <br>
+    <p th:text="#{email.regards}"></p>
+    <p th:text="#{email.team}"></p>
+</main>
+<footer th:replace="~{layout::footer}">
+</footer>
+</body>
+</html>

@@ -4,12 +4,10 @@ import com.vankyle.id.data.utils.AuthorizationGrantTypeConverter;
 import com.vankyle.id.data.utils.ClientAuthenticationMethodConverter;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.Set;
 
 
@@ -48,18 +46,5 @@ public class Client {
     private ClientSettingsData clientSettings;
     @Embedded
     private TokenSettingsData tokenSettings;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Client client = (Client) o;
-        return getId() != null && Objects.equals(getId(), client.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
 

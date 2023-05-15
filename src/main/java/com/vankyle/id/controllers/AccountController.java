@@ -27,7 +27,7 @@ import java.security.Principal;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/api/account")
+@RequestMapping("${vankyle.id.api-path}/account")
 public class AccountController {
     private final UserManager userManager;
     private final ValidationService validationService;
@@ -131,7 +131,7 @@ public class AccountController {
         return response;
     }
 
-    @PutMapping
+    @PutMapping("/phone")
     public UpdatePhoneResponse updatePhone(Principal principal, @RequestBody UpdatePhoneRequest updatePhoneRequest){
         var user = userManager.findByUsername(principal.getName());
         if (user != null) {
@@ -157,6 +157,7 @@ public class AccountController {
             logger.warn("send phone verification code to " + phone + " with locale " + locale);
             logger.warn("SMS service is not implemented yet so this is just a stub, no code is sent.");
             logger.warn("Please check the console for the verification code.");
+            // TODO: implement SMS service
     }
     private void sendEmailVerificationCode(User user, String email, Locale locale) throws MessagingException {
         var code = validationService.generateEmailConfirmationCode(user);
