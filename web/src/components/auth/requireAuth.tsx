@@ -47,7 +47,7 @@ export function RequireAuth(props: {
             userManager.removeUser().then();
             userManager.revokeTokens().then();
         });
-    }, [props, setStatus, userManager]);
+    }, [props, setStatus]);
     switch (status) {
         case "unauthorized": // Login required
             return <Loading/>;

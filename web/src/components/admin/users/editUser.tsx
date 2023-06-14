@@ -13,6 +13,7 @@ export function EditUser() {
     const [error, setError] = useState<null | string>(null);
     const [user, setUser] = useState<UserInterface | null>(null);
     const userId = window.location.pathname.split("/").pop();
+    const navigate = useNavigate();
     useEffect(() => {
         if (!userId) {
             setStatus("error");
@@ -41,7 +42,7 @@ export function EditUser() {
             setStatus("error");
             setError(error.message);
         });
-    }, [setStatus, setError, setUser, userId]);
+    }, [setStatus, setError, setUser, userId, navigate]);
 
     const onSubmit = (user: UserInterface) => {
         putUser(userId || user.id, user).then((response) => {
@@ -69,7 +70,6 @@ export function EditUser() {
     }
 
     const {t} = useTranslation();
-    const navigate = useNavigate();
     if (user && (status === "idle" || status === "success")) {
         return (
             <Container>
