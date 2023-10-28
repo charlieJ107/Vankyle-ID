@@ -3,7 +3,6 @@ import React, {useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {User} from "oidc-client-ts";
 import {emailPattern} from "../../../utils/regex";
-import config from "../../../config/config";
 import i18n from "../../../i18n/i18n";
 
 export function Email(props: { show: boolean, user: User | null, handleHide: () => void }) {
@@ -147,7 +146,7 @@ export function Email(props: { show: boolean, user: User | null, handleHide: () 
 }
 
 function postSendVerificationCode(email: string, user: User) {
-    return fetch(`${config.api_url}/account/email`, {
+    return fetch(`/api/account/email`, {
         method: "POST",
         body: JSON.stringify({email: email, locale: i18n.language}),
         headers: {
@@ -164,7 +163,7 @@ function postSendVerificationCode(email: string, user: User) {
 }
 
 function putEmailUpdate(email: string, code: string, user: User) {
-    return fetch(`${config.api_url}/api/account/email`, {
+    return fetch(`/api/account/email`, {
         method: "PUT",
         body: JSON.stringify({email: email, code: code}),
         headers: {

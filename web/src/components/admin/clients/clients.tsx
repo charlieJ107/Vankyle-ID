@@ -1,7 +1,6 @@
 import {Alert, Button, Container, Table} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
-import config from "../../../config/config";
 import {userManager} from "../../../auth/userManager";
 import {useNavigate} from "react-router-dom";
 
@@ -65,7 +64,7 @@ async function getClients() {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`${config.api_url}/admin/client/`, {
+    return fetch(`/api/admin/client/`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

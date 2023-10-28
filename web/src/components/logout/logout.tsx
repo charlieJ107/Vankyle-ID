@@ -1,6 +1,5 @@
 import {Loading} from "../shared/loading";
 import {useEffect} from "react";
-import config from "../../config/config";
 import {userManager} from "../../auth/userManager";
 
 export function Logout() {
@@ -28,7 +27,7 @@ export function Logout() {
 }
 
 function postLogout() {
-    return fetch(`${config.api_url}/logout`, {
+    return fetch(`/api/logout`, {
         method: "POST",
         credentials: "include"
     }).then((res) => {

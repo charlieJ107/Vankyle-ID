@@ -4,7 +4,6 @@ import React, {useEffect, useState} from "react";
 import dissatisfied from "../../img/dissatisfied.svg";
 import checkmarkFilled from "../../img/checkmark_filled.svg";
 import {Loading} from "../shared/loading";
-import config from "../../config/config";
 import {passwordPattern} from "../../utils/regex";
 
 export function ResetPassword() {
@@ -37,7 +36,7 @@ export function ResetPassword() {
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
         if (code) {
-            fetch(`${config.api_url}/reset-password?code=${code}`, {
+            fetch(`/api/reset-password?code=${code}`, {
                 method: "GET",
 
             }).then((response) => {
@@ -110,7 +109,7 @@ export function ResetPassword() {
                 <h1 className={"mb-3 text-center"}>{t("reset_password.title")}</h1>
                 <img className={"my-5"} src={checkmarkFilled} width={72} height={72} alt={"Invalid"}/>
                 <p className={"text-center"}>{t("reset_password.success")}</p>
-                <div><a className={"btn btn-link"} href={`${config.public_url}/login`}>{t("reset_password.sign_in")}</a></div>
+                <div><a className={"btn btn-link"} href={`/login`}>{t("reset_password.sign_in")}</a></div>
             </Container>
         );
     } else if (status === "loading") {
@@ -136,7 +135,7 @@ export function ResetPassword() {
 }
 
 function postResetPassword(code: string, password: string) {
-    return fetch(`${config.api_url}/reset-password`, {
+    return fetch(`/api/reset-password`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

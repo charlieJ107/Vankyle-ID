@@ -3,7 +3,6 @@ import {useTranslation} from "react-i18next";
 import {Alert, Button, Collapse, Form, InputGroup, Modal} from "react-bootstrap";
 import {phonePatternTest} from "../../../utils/regex";
 import {User} from "oidc-client-ts";
-import config from "../../../config/config";
 import i18n from "../../../i18n/i18n";
 
 export function Phone(props: {
@@ -173,7 +172,7 @@ export function Phone(props: {
 }
 
 function postSendVerificationCode(phone: string, user: User) {
-    return fetch(`${config.api_url}/account/phone`, {
+    return fetch(`/api/account/phone`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -193,7 +192,7 @@ function postSendVerificationCode(phone: string, user: User) {
 }
 
 function putPhoneUpdate(phone: string, code: string, user: User) {
-    return fetch(`${config.api_url}/account/phone`, {
+    return fetch(`/api/account/phone`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

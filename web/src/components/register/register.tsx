@@ -3,7 +3,6 @@ import {Alert, Button, Container, Form} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import "../../form-container.css";
 import i18n from "../../i18n/i18n";
-import config from "../../config/config";
 import {emailPattern, passwordPattern} from "../../utils/regex";
 import checkmark_filled from "../../img/checkmark_filled.svg";
 
@@ -40,7 +39,7 @@ export function Register() {
                 <h1 className={"mb-3 text-center"}>{t("register.sign_up")}</h1>
                 <img className={"my-5"} src={checkmark_filled} alt={"success"} width={72} height={72}/>
                 <p className={"text-center"}>{t("register.email_activate_description")}</p>
-                <a className={"btn btn-link"} href={`${config.public_url}/login`}>{t("register.sign_in")}</a>
+                <a className={"btn btn-link"} href={`/login`}>{t("register.sign_in")}</a>
             </Container>
         );
     }
@@ -101,7 +100,7 @@ export function Register() {
                     </Button>
                     <span className={"ms-0 ms-md-5"}>
                         {t("register.already_have_account")}
-                        <a className={"ms-3 btn btn-link"} href={`${config.public_url}/login`}>
+                        <a className={"ms-3 btn btn-link"} href={`/login`}>
                             {t("register.sign_in")}
                         </a>
                     </span>
@@ -112,7 +111,7 @@ export function Register() {
 }
 
 function postRegister(email: string, password: string) {
-    return fetch(`${config.api_url}/register`, {
+    return fetch(`/api/register`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

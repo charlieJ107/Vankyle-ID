@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import {userManager} from "../../../auth/userManager";
-import config from "../../../config/config"
 import {UserForm} from "./userForm";
 import {Loading} from "../../shared/loading";
 import {useTranslation} from "react-i18next";
@@ -99,7 +98,7 @@ async function getUser(userId: string) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`${config.api_url}/admin/user/` + userId, {
+    return fetch(`/api/admin/user/` + userId, {
         method: "GET",
         headers: {
             "Accept": "application/json",
@@ -129,7 +128,7 @@ async function putUser(userId: string, user: UserInterface) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`${config.api_url}/admin/user/` + userId, {
+    return fetch(`/api/admin/user/` + userId, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

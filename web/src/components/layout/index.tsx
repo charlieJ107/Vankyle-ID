@@ -6,7 +6,6 @@ import {User} from "oidc-client-ts";
 import {Brand} from "./brand";
 import {NavPersona} from "./navPersona";
 import {Link, useNavigate} from "react-router-dom";
-import config from "../../config/config"
 
 export function Layout(props: { children: React.ReactNode }) {
     const {t} = useTranslation();
@@ -90,7 +89,7 @@ const SignInButton = () => {
     return (
         <>
             <Button className={"me-3"}
-                    onClick={() => window.location.href = `${config.public_url}/login`}>{t("layout.sign_in")}</Button>
+                    onClick={() => window.location.href = `/login`}>{t("layout.sign_in")}</Button>
             <Button variant={"outline-primary"} onClick={() => navigate("/register")}>{t("layout.sign_up")}</Button>
         </>
     );

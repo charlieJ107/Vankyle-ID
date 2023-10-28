@@ -2,7 +2,6 @@ import {Alert, Button, Form, Modal} from "react-bootstrap";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {User} from "oidc-client-ts";
-import config from "../../../config/config";
 
 export function Info(props: {
     show: boolean,
@@ -63,7 +62,7 @@ export function Info(props: {
 }
 
 function putNameUpdate(name: string, user: User) {
-    return fetch(`${config.api_url}/account/info`, {
+    return fetch(`/api/account/info`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

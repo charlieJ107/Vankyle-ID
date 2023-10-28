@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Alert, Button, Container, Form} from "react-bootstrap";
 import {emailPattern} from "../../utils/regex";
-import config from "../../config/config";
 
 export function ForgotPassword() {
     const [status, setStatus] =
@@ -73,7 +72,7 @@ export function ForgotPassword() {
                     }
 
                     <Button variant="secondary" className="ms-2"
-                            onClick={() => window.location.href=`${config.public_url}/login`}>
+                            onClick={() => window.location.href=`/login`}>
                         {t("forgot_password.back")}
                     </Button>
                 </Form.Group>
@@ -83,7 +82,7 @@ export function ForgotPassword() {
 }
 
 function postForgotPassword(email: string) {
-    return fetch(`${config.api_url}/forgot-password`, {
+    return fetch(`/api/forgot-password`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
