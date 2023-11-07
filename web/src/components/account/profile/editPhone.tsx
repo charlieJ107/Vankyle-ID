@@ -5,7 +5,7 @@ import {phonePatternTest} from "../../../utils/regex";
 import {User} from "oidc-client-ts";
 import i18n from "../../../i18n/i18n";
 
-export function Phone(props: {
+export function EditPhone(props: {
     show: boolean,
     user: User | null,
     handleHide: () => void

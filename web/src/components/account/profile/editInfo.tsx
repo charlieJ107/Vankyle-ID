@@ -3,7 +3,7 @@ import React from "react";
 import {useTranslation} from "react-i18next";
 import {User} from "oidc-client-ts";
 
-export function Info(props: {
+export function EditInfo(props: {
     show: boolean,
     user: User | null,
     handleHide: () => void
@@ -61,19 +61,18 @@ export function Info(props: {
     );
 }
 
-function putNameUpdate(name: string, user: User) {
-    return fetch(`/api/account/info`, {
+async function putNameUpdate(name: string, user: User) {
+    const res = await fetch(`/api/account/info`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `${user.token_type} ${user.access_token}`
         },
         body: JSON.stringify({name: name})
-    }).then(res => {
-        if (res.ok) {
-            return res.json();
-        } else {
-            throw new Error("Failed to update name");
-        }
     });
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Failed to update name");
+    }
 }

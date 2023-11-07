@@ -5,7 +5,7 @@ import {User} from "oidc-client-ts";
 import {emailPattern} from "../../../utils/regex";
 import i18n from "../../../i18n/i18n";
 
-export function Email(props: { show: boolean, user: User | null, handleHide: () => void }) {
+export function EditEmail(props: { show: boolean, user: User | null, handleHide: () => void }) {
     const [status, setStatus] =
         React.useState<"idle" | "sent" | "send-again" | "error" | "success">("idle");
     const [email, setEmail] =

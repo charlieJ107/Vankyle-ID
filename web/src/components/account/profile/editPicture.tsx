@@ -4,7 +4,7 @@ import {Alert, Button, Form, Image, Modal} from "react-bootstrap";
 import userIcon from "../../../img/user.svg";
 import {User} from "oidc-client-ts";
 
-export function Picture(props: { show: boolean, user: User | null, handleHide: () => void }) {
+export function EditPicture(props: { show: boolean, user: User | null, handleHide: () => void }) {
     const [status, setStatus] =
         React.useState<"idle" | "submitted" | "error" | "success">("idle");
 
