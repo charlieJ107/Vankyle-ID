@@ -1,6 +1,5 @@
 import {Button, Card, Container, Image} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
-
 import React, {useEffect} from "react";
 import {User} from "oidc-client-ts";
 import userIcon from "../../../img/user.svg";
@@ -14,26 +13,7 @@ import {EditPhone} from "./editPhone";
 import {Loading} from "../../shared/loading";
 
 export function Profile() {
-    const [user, setUser] = React.useState<User | null>(
-        null
-        // For testing purposes, uncomment the following line to simulate a logged in user
-        // new User({
-        //     access_token: "", token_type: "",
-        //     profile: {
-        //         sub: "kale",
-        //         iss: "some_issuer",
-        //         aud: "some_audience",
-        //         exp: 0,
-        //         iat: 0,
-        //         name: "Kyle",
-        //         email: "a@a.com",
-        //         email_verified: true,
-        //         phone_number: "+8613163905241",
-        //         phone_number_verified: false,
-        //         picture: userIcon
-        //     }
-        // })
-    );
+    const [user, setUser] = React.useState<User | null>(null);
     const [status, setStatus] =
         React.useState<"loading" | "idle" | "success" | "error">("loading");
     const [pictureModifying, setPictureModifying] = React.useState(false);
@@ -41,17 +21,16 @@ export function Profile() {
     const [emailModifying, setEmailModifying] = React.useState(false);
     const [phoneModifying, setPhoneModifying] = React.useState(false);
     useEffect(() => {
-        if (user === null) {
-            userManager.getUser().then((oidc) => {
-                if (oidc === null) {
-                    setStatus("error");
-                } else {
-                    setUser(oidc);
-                    setStatus("success");
-                }
-            });
-        }
-    }, [setUser, setStatus, user]);
+        getUserInfo().then((user) => {
+            console.log(user);
+            if (!user) {
+                setStatus("error");
+            } else {
+                setUser(user);
+                setStatus("success");
+            }
+        });
+    }, [setUser, setStatus]);
     const {t} = useTranslation();
     if (status === "loading") return (<Loading/>);
     return (
@@ -80,7 +59,17 @@ export function Profile() {
                                 {t("profile.picture.change_picture")}
                             </Button>
                         </div>
-                        <Picture show={pictureModifying} handleHide={() => setPictureModifying(false)} user={user}/>
+                        <EditPicture show={pictureModifying} user={user} handleHide={() => {
+                            setPictureModifying(false);
+                            getUserInfo().then((user) => {
+                                if (!user) {
+                                    setStatus("error");
+                                } else {
+                                    setUser(user);
+                                    setStatus("success");
+                                }
+                            });
+                        }}/>
                     </div>
                     <div className={"d-flex mt-3 ms-3 me-3 pb-3 border-bottom align-items-center"}>
                         <h3>{t("profile.info.name.title")}</h3>
@@ -94,7 +83,17 @@ export function Profile() {
                                 {t("profile.info.name.change_name")}
                             </Button>
                         </div>
-                        <Info user={user} show={infoModifying} handleHide={() => setInfoModifying(false)}/>
+                        <EditInfo user={user} show={infoModifying} handleHide={() => {
+                            setInfoModifying(false);
+                            getUserInfo().then((user) => {
+                                if (!user) {
+                                    setStatus("error");
+                                } else {
+                                    setUser(user);
+                                    setStatus("success");
+                                }
+                            });
+                        }}/>
                     </div>
                 </Card.Body>
             </Card>
@@ -147,10 +146,18 @@ export function Profile() {
                                 </div> : null}
                         </div>
                     </div>
-                    <Email user={user} show={emailModifying}
-                           handleHide={() => {
-                               setEmailModifying(false);
-                           }}/>
+                    <EditEmail user={user} show={emailModifying}
+                               handleHide={() => {
+                                   setEmailModifying(false);
+                                   getUserInfo().then((user) => {
+                                       if (!user) {
+                                             setStatus("error");
+                                       } else {
+                                            setUser(user);
+                                            setStatus("success");
+                                       }
+                                      });
+                               }}/>
                     <div className={"d-flex mt-3 ms-3 me-3 pb-3 border-bottom align-items-center"}>
                         <h3>{t("profile.phone.title")}</h3>
                         <div className={"d-flex flex-column ms-5"}>
@@ -185,6 +192,14 @@ export function Profile() {
                                     <Button variant={"link"}
                                             onClick={() => {
                                                 setPhoneModifying(true);
+                                                getUserInfo().then((user) => {
+                                                    if (!user) {
+                                                        setStatus("error");
+                                                    } else {
+                                                        setUser(user);
+                                                        setStatus("success");
+                                                    }
+                                                });
                                             }}
                                             className={"text-secondary"}>
                                         {t("profile.phone.verify_now")}
@@ -192,9 +207,28 @@ export function Profile() {
                                 </div> : null}
                         </div>
                     </div>
-                    <Phone user={user} show={phoneModifying} handleHide={() => setPhoneModifying(false)}/>
+                    <EditPhone user={user} show={phoneModifying} handleHide={() => setPhoneModifying(false)}/>
                 </Card.Body>
             </Card>
         </Container>
     );
+}
+
+async function getUserInfo(): Promise<User | null> {
+    const auth = await userManager.getUser();
+    if (!auth) return null;
+    const response = await fetch("/api/userinfo", {
+        method: "GET",
+        headers: {
+            Authorization: `${auth.token_type} ${auth.access_token}`
+        }
+    });
+    if (response.ok) {
+        response.json().then((data) => {
+           auth.profile = data;
+        });
+        return auth;
+    } else {
+        return null;
+    }
 }

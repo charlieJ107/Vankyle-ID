@@ -29,18 +29,24 @@ export function Oidc() {
                 state: state === null ? undefined : state
             });
         } else {
-            userManager.signinRedirectCallback().then((user) => {
-                if (user.state) {
-                    setState({status: "success"});
-                    window.location.replace(user.state as string);
+            userManager.signinCallback(window.location.href).then((user) => {
+                if (user) {
+                    if (user.state) {
+                        setState({status: "success"});
+                        window.location.replace(user.state as string);
+                    } else {
+                        setState({status: "success"});
+                        window.location.assign("/");
+                    }
                 } else {
-                    setState({status: "success"});
+                    setState({status: "error"});
+                    console.error("User is null");
                     window.location.assign("/");
                 }
             }).catch((error) => {
-                setState({status: "success"});
+                setState({status: "error"});
                 console.error(error);
-                window.location.pathname = "/";
+                window.location.assign("/");
             });
         }
     }, [searchParams, setState]);

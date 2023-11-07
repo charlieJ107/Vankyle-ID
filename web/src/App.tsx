@@ -32,7 +32,7 @@ function App() {
                 <Route path="/oidc" element={<Oidc/>}/>
                 <Route path="/error" element={<Error/>}/>
                 <Route path="/404" element={<NotFound/>}/>
-                <Route path="*" element={<NotFound/>}/>
+                {/*<Route path="*" element={<NotFound/>}/>*/}
             </Routes>
         </BrowserRouter>
     );

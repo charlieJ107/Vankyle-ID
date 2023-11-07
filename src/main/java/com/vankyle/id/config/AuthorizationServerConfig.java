@@ -3,6 +3,8 @@ package com.vankyle.id.config;
 import com.vankyle.id.config.handlers.JsonResponseAuthenticationEntryPoint;
 import com.vankyle.id.config.handlers.JsonResponseAuthorizationEndpointHandler;
 import com.vankyle.id.config.jose.JsonWebKeys;
+import com.vankyle.id.config.jwt.JwtCustomizer;
+import com.vankyle.id.config.jwt.OidcUserInfoMapper;
 import com.vankyle.id.config.jwt.RoleBasedJwtAuthenticationConverter;
 import com.vankyle.id.config.properties.ApplicationProperties;
 import com.vankyle.id.data.repository.AuthorizationConsentRepository;
@@ -16,6 +18,7 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.vankyle.id.service.oauth.JpaRegisteredClientService;
 import com.vankyle.id.service.oauth.RegisteredClientService;
+import com.vankyle.id.service.security.UserManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,10 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -35,7 +35,6 @@ import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -48,9 +47,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.time.Instant;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableConfigurationProperties(ApplicationProperties.class)
@@ -61,16 +58,25 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain authorizationServerSecurityFilterChain(
+            HttpSecurity http,
+            OidcUserInfoMapper oidcUserInfoMapper
+    ) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer();
         authorizationServerConfigurer
                 .authorizationEndpoint(authorizationEndpoint ->
-                        authorizationEndpoint.consentPage("/consent")
+                        authorizationEndpoint.consentPage(base_url+"/consent")
                                 .authorizationResponseHandler(new JsonResponseAuthorizationEndpointHandler())
                                 .errorResponseHandler(new JsonResponseAuthorizationEndpointHandler())
                 )
-                .oidc(Customizer.withDefaults()); // Enable OpenID Connect 1.0
+                .oidc(
+                    oidcConfigurer->oidcConfigurer
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                .userInfoMapper(oidcUserInfoMapper)
+                        )
+
+                ); // Enable OpenID Connect 1.0
         RequestMatcher endpointsMatcher = authorizationServerConfigurer
                 .getEndpointsMatcher();
 
@@ -80,11 +86,14 @@ public class AuthorizationServerConfig {
                 )
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .exceptionHandling(exceptions ->
-                        exceptions.authenticationEntryPoint(new JsonResponseAuthenticationEntryPoint("/login"))
+                        exceptions.authenticationEntryPoint(
+                                new JsonResponseAuthenticationEntryPoint(base_url+ "/login")
+                        )
                 )
                 .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
-                        httpSecurityOAuth2ResourceServerConfigurer.jwt()
-                                .jwtAuthenticationConverter(new RoleBasedJwtAuthenticationConverter()))
+                        httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer ->
+                                jwtConfigurer.jwtAuthenticationConverter(new RoleBasedJwtAuthenticationConverter()))
+                )
                 .apply(authorizationServerConfigurer);
         return http.build();
     }
@@ -105,12 +114,13 @@ public class AuthorizationServerConfig {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri(base_url + "/oidc")
+                .redirectUri("/oidc")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .scope(OidcScopes.EMAIL)
                 .scope(OidcScopes.ADDRESS)
                 .scope(OidcScopes.PHONE)
+                .scope("roles")
                 .clientSettings(
                         ClientSettings.builder()
                                 .requireAuthorizationConsent(true)
@@ -139,7 +149,10 @@ public class AuthorizationServerConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+        .issuer(base_url)
+        .oidcUserInfoEndpoint("/api/userinfo")
+        .build();
     }
 
     @Bean
@@ -158,17 +171,11 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
-        return context -> {
-            if (context.getTokenType() == OAuth2TokenType.ACCESS_TOKEN) {
-                Authentication principal = context.getPrincipal();
-                Set<String> authorities = principal.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .filter(authority -> authority.startsWith("ROLE_"))
-                        .map(authority -> authority.substring(5))
-                        .collect(Collectors.toSet());
-                context.getClaims().claim("roles", authorities);
-            }
-        };
+    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer(UserManager userManager) {
+        return new JwtCustomizer(userManager);
+    }
+
+    @Bean OidcUserInfoMapper oidcUserInfoMapper(UserManager userManager) {
+        return new OidcUserInfoMapper(userManager);
     }
 }

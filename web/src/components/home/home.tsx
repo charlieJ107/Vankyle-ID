@@ -25,7 +25,7 @@ export function Home() {
                     <p className={"mt-3"}>{t("home.introduction")}</p>
                     <Row className={"mt-3"}>
                         <Col className={"text-end"}>
-                            <Button onClick={() => window.location.href = `/login`}>
+                            <Button onClick={() => userManager.signinRedirect({state:window.location.href})}>
                                 {t("home.sign_in")}
                             </Button>
                         </Col>
