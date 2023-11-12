@@ -22,5 +22,5 @@ public interface AuthorizationRepository extends JpaRepository<Authorization, St
             String accessToken,
             String refreshToken
     );
-    Optional<Authorization> findAuthorizationByTokensContains(OAuth2TokenData tokens);
+
 }
