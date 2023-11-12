@@ -1,7 +1,6 @@
 package com.vankyle.id.data.repository;
 
 import com.vankyle.id.data.entity.Authorization;
-import com.vankyle.id.data.entity.OAuth2TokenData;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
