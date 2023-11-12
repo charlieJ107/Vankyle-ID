@@ -1,16 +1,15 @@
 import {Alert, Button, Collapse, Form, Modal} from "react-bootstrap";
 import React, {useEffect} from "react";
 import {useTranslation} from "react-i18next";
-import {User} from "oidc-client-ts";
 import {emailPattern} from "../../../utils/regex";
-import config from "../../../config/config";
 import i18n from "../../../i18n/i18n";
+import {userManager} from "../../../auth/userManager";
 
-export function Email(props: { show: boolean, user: User | null, handleHide: () => void }) {
+export function EditEmail(props: { show: boolean, email: string | null, handleHide: () => void }) {
     const [status, setStatus] =
         React.useState<"idle" | "sent" | "send-again" | "error" | "success">("idle");
     const [email, setEmail] =
-        React.useState<{ value: string, valid?: boolean }>({value: ""});
+        React.useState<{ value: string, valid?: boolean }>({value: props.email ? props.email : ""});
     const [verificationCode, setVerificationCode] =
         React.useState<{ value: string, valid?: boolean }>({value: ""});
 
@@ -28,42 +27,36 @@ export function Email(props: { show: boolean, user: User | null, handleHide: () 
 
     // Send verification code API calls, fold these function to have a cleaner view
     const handleSendVerificationCode = () => {
-        if (props.user) {
-            postSendVerificationCode(email.value, props.user).then(
-                (response) => {
-                    if (response.status === 200) {
-                        setStatus("sent");
-                        setCounter(60);
-                    } else {
-                        setStatus("error");
-                    }
+        postSendVerificationCode(email.value).then(
+            (response) => {
+                if (response.status === 200) {
+                    setStatus("sent");
+                    setCounter(60);
+                } else {
+                    setStatus("error");
                 }
-            ).catch(() => {
-                setStatus("error");
-            });
-        } else {
+            }
+        ).catch(() => {
             setStatus("error");
-        }
+        });
     }
 
     // Update email API calls, fold these function to have a cleaner view
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (props.user) {
-            putEmailUpdate(email.value, verificationCode.value, props.user).then(
-                (response) => {
-                    if (response.status === 200) {
-                        setStatus("success");
-                    } else if (response.status === 400) {
-                        setVerificationCode({...verificationCode, valid: false});
-                    } else {
-                        setStatus("error");
-                    }
+        putEmailUpdate(email.value, verificationCode.value).then(
+            (response) => {
+                if (response.status === 200) {
+                    setStatus("success");
+                } else if (response.status === 400) {
+                    setVerificationCode({...verificationCode, valid: false});
+                } else {
+                    setStatus("error");
                 }
-            ).catch(() => {
-                setStatus("error");
-            });
-        }
+            }
+        ).catch(() => {
+            setStatus("error");
+        });
     }
 
     // Handle closing modal, fold this function to have a cleaner view
@@ -129,7 +122,8 @@ export function Email(props: { show: boolean, user: User | null, handleHide: () 
                                                   valid: verificationCode.value.length === 6
                                               });
                                           }}/>
-                            <Form.Control.Feedback type="invalid">{t("profile.email.verification_code_invalid")}</Form.Control.Feedback>
+                            <Form.Control.Feedback
+                                type="invalid">{t("profile.email.verification_code_invalid")}</Form.Control.Feedback>
                         </Form.Group>
                     </Collapse>
                 </Form>
@@ -146,36 +140,38 @@ export function Email(props: { show: boolean, user: User | null, handleHide: () 
     );
 }
 
-function postSendVerificationCode(email: string, user: User) {
-    return fetch(`${config.api_url}/account/email`, {
+async function postSendVerificationCode(email: string) {
+    const user = await userManager.getUser();
+    if (!user) throw new Error("User not logged in");
+    const res = await fetch(`/api/account/email`, {
         method: "POST",
         body: JSON.stringify({email: email, locale: i18n.language}),
         headers: {
             "Content-Type": "application/json",
             "Authorization": `${user.token_type} ${user.access_token}`
         },
-    }).then((res) => {
-        if (res.ok) {
-            return res.json();
-        } else {
-            throw new Error("Failed to send verification code");
-        }
     });
+    if (res.ok) {
+        return await res.json();
+    } else {
+        throw new Error("Failed to send verification code");
+    }
 }
 
-function putEmailUpdate(email: string, code: string, user: User) {
-    return fetch(`${config.api_url}/api/account/email`, {
+async function putEmailUpdate(email: string, code: string) {
+    const user = await userManager.getUser();
+    if (!user) throw new Error("User not logged in");
+    const res = await fetch(`/api/account/email`, {
         method: "PUT",
         body: JSON.stringify({email: email, code: code}),
         headers: {
             "Content-Type": "application/json",
             "Authorization": `${user.token_type} ${user.access_token}`
         }
-    }).then((res) => {
-        if (res.ok) {
-            return res.json();
-        } else {
-            throw new Error("Failed to verify email");
-        }
     });
+    if (res.ok) {
+        return await res.json();
+    } else {
+        throw new Error("Failed to verify email");
+    }
 }

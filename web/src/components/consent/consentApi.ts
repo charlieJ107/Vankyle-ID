@@ -1,6 +1,5 @@
-import config from '../../config/config';
 export function getConsentInfo(params: URLSearchParams){
-    return fetch(`${config.api_url}/consent?${params.toString()}`, {
+    return fetch(`/api/consent?${params.toString()}`, {
         method: 'GET',
         headers: {
             "Accept": "application/json"
@@ -15,7 +14,7 @@ export function getConsentInfo(params: URLSearchParams){
 }
 
 export function postConsentInfo(data: URLSearchParams){
-    return fetch(`${config.oidc.authority}/oauth2/authorize`, {
+    return fetch(`/oauth2/authorize`, {
         method: 'POST',
         headers: {
             "Accept": "application/json"

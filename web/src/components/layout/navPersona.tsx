@@ -26,7 +26,7 @@ export function NavPersona(props: { user: User }) {
                 <div className={"d-flex align-items-center"}>
                     <Image src={props.user.profile.picture ? props.user.profile.picture : userIcon}
                            width="48" height="48" className="d-inline-block align-top"/>
-                    <span className={"ms-3"}>{props.user.profile.name}</span>
+                    <span className={"ms-3"}>{props.user.profile.name?props.user.profile.name:props.user.profile.sub}</span>
                 </div>
             </NavDropdown.Item>
             <NavDropdown.Divider/>

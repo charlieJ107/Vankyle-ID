@@ -1,13 +1,14 @@
 import {UserManager, UserManagerSettings} from "oidc-client-ts";
-import config from "../config/config";
+
+
 
 
 const userManagerSettings: UserManagerSettings = {
-    authority: config.oidc.authority,
-    redirect_uri: config.oidc.redirect_uri,
+    authority: "/",
+    redirect_uri: "/oidc",
     client_id: "account",
     client_secret: "client_secret",
-    scope: "openid profile",
+    scope: "openid profile email phone address roles",
     loadUserInfo: true
 };
 

@@ -1,7 +1,7 @@
 FROM nginx:latest
 LABEL authors="Charlie J <charlie_j107@outlook.com>"
-
-COPY reserve.nginx.conf /etc/nginx/conf.d/default.conf
+LABEL org.opencontainers.image.source = "https://github.com/charlieJ107/Vankyle-ID"
+COPY reserve.nginx.conf.template /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 

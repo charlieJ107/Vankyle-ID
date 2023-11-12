@@ -4,8 +4,6 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,13 +15,22 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import java.io.IOException;
 
+/**
+ * This class is used to handle authentication entry point.This entry point is using
+ * <link>JsonResponseRedirectStrategy</link> instead of <link>DefaultRedirectStrategy</link>.
+ * <p>
+ * If request is not authenticated, it will redirect to login page.
+ * <p>
+ * If request is authenticated, it will redirect to the original request.
+ * <p>
+ * If request is not authenticated and request is from REST client, it will return 401 error.
+ */
 public class JsonResponseAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint
         implements AuthenticationEntryPoint {
 
     private static final Log logger = LogFactory.getLog(JsonResponseAuthenticationEntryPoint.class);
-    @Getter
-    @Setter
-    private RedirectStrategy redirectStrategy = new JsonResponseRedirectStrategy();
+
+    private final RedirectStrategy redirectStrategy = new JsonResponseRedirectStrategy();
 
     @Value("${vankyle.id.api-path}")
     private String apiPath = "/api";
@@ -69,7 +76,5 @@ public class JsonResponseAuthenticationEntryPoint extends LoginUrlAuthentication
         logger.debug(LogMessage.format("Server side forward to: %s", loginForm));
         RequestDispatcher dispatcher = request.getRequestDispatcher(loginForm);
         dispatcher.forward(request, response);
-        return;
     }
-
 }

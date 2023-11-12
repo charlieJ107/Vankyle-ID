@@ -5,7 +5,6 @@ import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {ClientInterface, JwsAlgorithm} from "./clientInterface";
 import {userManager} from "../../../auth/userManager";
-import config from "../../../config/config";
 import {useState} from "react";
 
 export function CreateClient() {
@@ -83,7 +82,7 @@ async function createClient(data: ClientInterface) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`${config.api_url}/admin/client/`, {
+    return fetch(`/api/admin/client/`, {
         method: "POST",
         headers: {
             "Accept": "application/json",

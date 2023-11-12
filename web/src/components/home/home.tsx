@@ -3,7 +3,6 @@ import {Button, Col, Container, Row} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import {Layout} from "../layout";
 import {userManager} from "../../auth/userManager";
-import config from "../../config/config"
 import {User} from "oidc-client-ts";
 import {Navigate, useNavigate} from "react-router-dom";
 
@@ -26,7 +25,7 @@ export function Home() {
                     <p className={"mt-3"}>{t("home.introduction")}</p>
                     <Row className={"mt-3"}>
                         <Col className={"text-end"}>
-                            <Button onClick={() => window.location.href = `${config.public_url}/login`}>
+                            <Button onClick={() => userManager.signinRedirect({state:window.location.href})}>
                                 {t("home.sign_in")}
                             </Button>
                         </Col>

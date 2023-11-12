@@ -4,7 +4,6 @@ import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
 import {Alert} from "react-bootstrap";
 import {UserForm} from "./userForm";
-import config from "../../../config/config";
 import {userManager} from "../../../auth/userManager";
 
 export function CreateUser() {
@@ -68,7 +67,7 @@ async function createUser(data: UserInterface) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`${config.api_url}/admin/user/`, {
+    return fetch(`/api/admin/user/`, {
         method: "POST",
         headers: {
             "Accept": "application/json",

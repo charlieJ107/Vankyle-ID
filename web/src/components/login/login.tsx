@@ -2,22 +2,22 @@ import {Alert, Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
 import "../../form-container.css"
-import config from "../../config/config"
 import {useNavigate} from "react-router-dom";
 
 export function Login() {
     const [error, setError] = useState<string | null>(null);
     const [username, setUsername] =
-        useState<{ value: string, valid?: boolean }>({value: ""});
+        useState<string>("");
     const [password, setPassword] =
-        useState<{ value: string, valid?: boolean }>({value: ""});
+        useState<string>("");
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [agreedTerms, setAgreedTerms] = useState<boolean>(true);
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         postLogin({
-            username: username.value,
-            password: password.value, rememberMe
+            username: username,
+            password: password,
+            rememberMe
         }).then((response) => {
             // Since we are using the api, the response will be a json object with status code, the response will always
             // be 200. If the login is successful, the status code will be 200, otherwise it will be 401 or 403
@@ -47,24 +47,16 @@ export function Login() {
                 <Form className={"m-4"} onSubmit={handleSubmit}>
                     <Form.Group className={"mt-3"}>
                         <Form.Label>{t("login.username")}</Form.Label>
-                        <Form.Control type="text" name={"username"} value={username.value}
-                                      isValid={username.valid === true}
-                                      isInvalid={username.valid === false}
+                        <Form.Control type="text" name={"username"} value={username}
                                       onChange={(e) =>
-                                          setUsername({...username, value: e.target.value})}
-                        onBlur={(e)=>
-                        setUsername({...username, valid: e.target.value.length!==0})}/>
+                                          setUsername(e.target.value)}/>
                         <Form.Control.Feedback type="invalid">{t("login.username_required")}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className={"mt-3"}>
                         <Form.Label>{t("login.password")}</Form.Label>
-                        <Form.Control type="password" name={"password"} value={password.value}
-                                      isValid={password.valid === true}
-                                      isInvalid={password.valid === false}
+                        <Form.Control type="password" name={"password"} value={password}
                                       onChange={(e) =>
-                                          setPassword({...password, value: e.target.value})}
-                                      onBlur={(e) =>
-                                          setPassword({...password, valid: e.target.value.length !== 0})}/>
+                                          setPassword(e.target.value)}/>
                         <Form.Control.Feedback type="invalid">{t("login.password_required")}</Form.Control.Feedback>
                     </Form.Group>
                     <Row className={"my-3 justify-content-around"}>
@@ -75,13 +67,14 @@ export function Login() {
                             </Form.Group>
                         </Col>
                         <Col className={"text-end"}>
-                            <Button variant="link" onClick={()=>navigate("/forgot-password")}>{t("login.forgot_password")}</Button>
+                            <Button variant="link"
+                                    onClick={() => navigate("/forgot-password")}>{t("login.forgot_password")}</Button>
                         </Col>
                     </Row>
                     <Row className={"mt-3 d-flex justify-content-around gap-3"}>
                         <Col>
                             <Button className={"w-100"} variant="primary" type="submit"
-                            disabled={!(username.valid && password.valid && agreedTerms)}>
+                                    disabled={!(username.length > 0 && password.length > 0) && agreedTerms}>
                                 {t("login.sign_in")}
                             </Button>
                         </Col>
@@ -93,7 +86,8 @@ export function Login() {
                         </Col>
                     </Row>
                     <Form.Group className={"mt-3"}>
-                        {!agreedTerms && <Alert variant={"warning"} className={"mt-3 py-1"}>{t("login.agree_terms_required")}</Alert>}
+                        {!agreedTerms && <Alert variant={"warning"}
+                                                className={"mt-3 py-1"}>{t("login.agree_terms_required")}</Alert>}
                         <Form.Check className={"text-body-tertiary"} type="checkbox"
                                     label={t("login.agree_terms")} checked={agreedTerms}
                                     onChange={(e) => setAgreedTerms(e.target.checked)}/>
@@ -108,10 +102,10 @@ function postLogin({username, password, rememberMe}: { username: string, passwor
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append("username", username);
     urlSearchParams.append("password", password);
-    if (rememberMe){
+    if (rememberMe) {
         urlSearchParams.append("rememberMe", "on");
     }
-    return fetch(`${config.api_url}/login?${urlSearchParams.toString()}`, {
+    return fetch(`/api/login?${urlSearchParams.toString()}`, {
         method: "POST",
         headers: {
             "Accept": "application/json",

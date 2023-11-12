@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -39,16 +40,24 @@ public class SecurityConfig {
                                 ).permitAll()
                                 .requestMatchers(apiPath + "/admin/**").hasRole("admin")
                                 .anyRequest().authenticated())
-                .formLogin().loginPage("/login").loginProcessingUrl(apiPath + "/login")
-                .successHandler(new JsonResponseAuthenticationSuccessHandler())
-                .failureHandler(new JsonResponseAuthenticationFailureHandler())
-                .and().logout().logoutUrl(apiPath + "/logout")
-                .logoutSuccessHandler(new JsonResponseLogoutSuccessHandler())
-                .and().exceptionHandling()
-                .accessDeniedHandler(new JsonResponseAccessDeniedHandler())
-                .authenticationEntryPoint(new JsonResponseAuthenticationEntryPoint("/login"));
-        http.logout().and().rememberMe();
-        http.csrf().disable();
+                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
+                        .loginPage("/login")
+                        .loginProcessingUrl(apiPath + "/login")
+                        .successHandler(new JsonResponseAuthenticationSuccessHandler())
+                        .failureHandler(new JsonResponseAuthenticationFailureHandler()))
+                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                        .logoutUrl(apiPath + "/logout")
+                        .logoutSuccessHandler(new JsonResponseLogoutSuccessHandler()))
+
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
+                        .accessDeniedHandler(new JsonResponseAccessDeniedHandler())
+                        .authenticationEntryPoint(new JsonResponseAuthenticationEntryPoint("/login")))
+                .rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer
+                        .rememberMeCookieName("remember-me")
+                        .rememberMeParameter("remember-me")
+                        .key("remember-me")
+                        .tokenValiditySeconds(86400));
+        http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 

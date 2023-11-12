@@ -1,7 +1,7 @@
 # Serve a static website in /usr/share/nginx/html
 server {
-    listen 80;
-    server_name frontend;
+    listen ${FRONTEND_PORT};
+    server_name ${FRONTEND_HOST};
     root   /usr/share/nginx/html;
     index index.html;
     location / {

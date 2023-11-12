@@ -3,7 +3,6 @@ import {Alert, Button, Container, Form} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
 import {passwordPattern} from "../../../../utils/regex";
-import config from "../../../../config/config";
 import {User} from "oidc-client-ts";
 import {userManager} from "../../../../auth/userManager";
 import "../../../../form-container.css";
@@ -118,7 +117,7 @@ export function Password() {
 }
 
 function putPasswordUpdate(currentPassword: string, newPassword: string, user: User) {
-    return fetch(`${config.api_url}/account/password`, {
+    return fetch(`/api/account/password`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
