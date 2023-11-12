@@ -2,34 +2,34 @@ import React, {useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {Alert, Button, Collapse, Form, InputGroup, Modal} from "react-bootstrap";
 import {phonePatternTest} from "../../../utils/regex";
-import {User} from "oidc-client-ts";
 import i18n from "../../../i18n/i18n";
+import {userManager} from "../../../auth/userManager";
 
 export function EditPhone(props: {
     show: boolean,
-    user: User | null,
+    phoneNumber: string | null,
     handleHide: () => void
 }) {
     const [status, setStatus] =
         React.useState<"idle" | "sent" | "send-again" | "error" | "success">("idle");
+    let initPhone = {prefix: "+44", value: ""};
+    if (props.phoneNumber) {
+        const phones = props.phoneNumber.split(" ");
+        initPhone.prefix = phones[0];
+        initPhone.value = phones[1];
+    }
     const [phone, setPhone] =
-        React.useState<{ prefix: string, value: string, valid?: boolean }>({prefix: "+44", value: ""});
+        React.useState<{
+            prefix: string,
+            value: string,
+            valid?: boolean
+        }>(initPhone);
     const [verificationCode, setVerificationCode] =
-        React.useState<{ value: string, valid?: boolean }>({value: ""});
+        React.useState<{
+            value: string,
+            valid?: boolean
+        }>({value: ""});
     const [counter, setCounter] = React.useState(0);
-    useEffect(() => {
-        if (props.user) {
-            const phone_number = props.user.profile.phone_number;
-            if (phone_number) {
-                const phones = phone_number.split(" ");
-                const prefix = phones[0];
-                const value = phones[1];
-                setPhone({prefix, value});
-            } else {
-                setPhone({prefix: "+44", value: ""});
-            }
-        }
-    }, [props.user, setPhone]);
     useEffect(() => {
         const interval = setInterval(() => {
             counter > 0 && setCounter(counter - 1);
@@ -40,40 +40,34 @@ export function EditPhone(props: {
         return () => clearInterval(interval);
     }, [counter, status, setStatus, setCounter]);
     const handleSendVerificationCode = () => {
-        if (props.user) {
-            postSendVerificationCode(phone.value, props.user).then(
-                (response) => {
-                    if (response.status === 200) {
-                        setStatus("sent");
-                        setCounter(60);
-                    } else {
-                        setStatus("error");
-                    }
+        postSendVerificationCode(phone.value).then(
+            (response) => {
+                if (response.status === 200) {
+                    setStatus("sent");
+                    setCounter(60);
+                } else {
+                    setStatus("error");
                 }
-            ).catch((error) => {
-                console.error(error);
-                setStatus("error");
-            });
-        } else {
+            }
+        ).catch((error) => {
+            console.error(error);
             setStatus("error");
-        }
+        });
     }
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (props.user) {
-            putPhoneUpdate(phone.value, verificationCode.value, props.user).then(
-                (response) => {
-                    if (response.status === 200) {
-                        setStatus("success");
-                    } else {
-                        setStatus("error");
-                    }
+        putPhoneUpdate(phone.value, verificationCode.value).then(
+            (response) => {
+                if (response.status === 200) {
+                    setStatus("success");
+                } else {
+                    setStatus("error");
                 }
-            ).catch((error) => {
-                console.error(error);
-                setStatus("error");
-            });
-        }
+            }
+        ).catch((error) => {
+            console.error(error);
+            setStatus("error");
+        });
     }
     const handleClose = () => {
         setStatus("idle");
@@ -171,8 +165,10 @@ export function EditPhone(props: {
     );
 }
 
-function postSendVerificationCode(phone: string, user: User) {
-    return fetch(`/api/account/phone`, {
+async function postSendVerificationCode(phone: string) {
+    const user = await userManager.getUser();
+    if (!user) throw new Error("User not logged in");
+    const response = await fetch(`/api/account/phone`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -182,17 +178,18 @@ function postSendVerificationCode(phone: string, user: User) {
             phone: phone,
             locale: i18n.language
         })
-    }).then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error(response.statusText);
-        }
     });
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error(response.statusText);
+    }
 }
 
-function putPhoneUpdate(phone: string, code: string, user: User) {
-    return fetch(`/api/account/phone`, {
+async function putPhoneUpdate(phone: string, code: string) {
+    const user = await userManager.getUser();
+    if (!user) throw new Error("User not logged in");
+    const response = await fetch(`/api/account/phone`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -202,11 +199,10 @@ function putPhoneUpdate(phone: string, code: string, user: User) {
             phone: phone,
             code: code
         })
-    }).then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error(response.statusText);
-        }
     });
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error(response.statusText);
+    }
 }

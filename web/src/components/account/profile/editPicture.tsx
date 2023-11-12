@@ -2,9 +2,12 @@ import React from "react";
 import {useTranslation} from "react-i18next";
 import {Alert, Button, Form, Image, Modal} from "react-bootstrap";
 import userIcon from "../../../img/user.svg";
-import {User} from "oidc-client-ts";
 
-export function EditPicture(props: { show: boolean, user: User | null, handleHide: () => void }) {
+export function EditPicture(props: {
+    show: boolean,
+    handleHide: () => void,
+    picture_src: string | null
+}) {
     const [status, setStatus] =
         React.useState<"idle" | "submitted" | "error" | "success">("idle");
 
@@ -27,7 +30,7 @@ export function EditPicture(props: { show: boolean, user: User | null, handleHid
                 {status === "success" && <Alert variant={"success"}>{t("profile.picture.success")}</Alert>}
                 {status === "error" && <Alert variant={"danger"}>{t("profile.picture.error")}</Alert>}
                 <Form id={"picture-form"} onSubmit={handleSubmit}>
-                    <Image src={props.user && props.user.profile.picture ? props.user.profile.picture : userIcon}
+                    <Image src={props.picture_src ? props.picture_src : userIcon}
                            width={72} height={72}
                            style={{
                                borderRadius: "50%",

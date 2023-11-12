@@ -1,9 +1,7 @@
 import {Button, Card, Container, Image} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import React, {useEffect} from "react";
-import {User} from "oidc-client-ts";
 import userIcon from "../../../img/user.svg";
-import {userManager} from "../../../auth/userManager";
 import checkedIcon from "../../../img/checkmark_filled.svg";
 import closedIcon from "../../../img/closed_filled.svg";
 import {EditEmail} from "./editEmail";
@@ -11,9 +9,10 @@ import {EditPicture} from "./editPicture";
 import {EditInfo} from "./editInfo";
 import {EditPhone} from "./editPhone";
 import {Loading} from "../../shared/loading";
+import {getUserInfo, UserInfo} from "./profileUtils";
 
 export function Profile() {
-    const [user, setUser] = React.useState<User | null>(null);
+    const [userInfo, setUserInfo] = React.useState<UserInfo | null>(null);
     const [status, setStatus] =
         React.useState<"loading" | "idle" | "success" | "error">("loading");
     const [pictureModifying, setPictureModifying] = React.useState(false);
@@ -21,16 +20,13 @@ export function Profile() {
     const [emailModifying, setEmailModifying] = React.useState(false);
     const [phoneModifying, setPhoneModifying] = React.useState(false);
     useEffect(() => {
-        getUserInfo().then((user) => {
-            console.log(user);
-            if (!user) {
-                setStatus("error");
-            } else {
-                setUser(user);
-                setStatus("success");
-            }
+        getUserInfo().then((updatedProfile) => {
+            setUserInfo(updatedProfile);
+            setStatus("idle");
+        }).catch(() => {
+            setStatus("error");
         });
-    }, [setUser, setStatus]);
+    }, [setUserInfo, setStatus]);
     const {t} = useTranslation();
     if (status === "loading") return (<Loading/>);
     return (
@@ -45,7 +41,7 @@ export function Profile() {
                 </Card.Header>
                 <Card.Body>
                     <div className={"d-flex pb-5 border-bottom align-items-center"}>
-                        <Image src={user && user.profile.picture ? user.profile.picture : userIcon}
+                        <Image src={userInfo && userInfo.picture ? userInfo.picture : userIcon}
                                width={72} height={72}
                                style={{
                                    borderRadius: "50%",
@@ -59,22 +55,21 @@ export function Profile() {
                                 {t("profile.picture.change_picture")}
                             </Button>
                         </div>
-                        <EditPicture show={pictureModifying} user={user} handleHide={() => {
-                            setPictureModifying(false);
-                            getUserInfo().then((user) => {
-                                if (!user) {
-                                    setStatus("error");
-                                } else {
-                                    setUser(user);
-                                    setStatus("success");
-                                }
-                            });
-                        }}/>
+                        <EditPicture show={pictureModifying}
+                                     picture_src={userInfo && userInfo.picture ? userInfo.picture : null}
+                                     handleHide={() => {
+                                         setPictureModifying(false);
+                                         getUserInfo().then((updatedProfile) => {
+                                             setUserInfo(updatedProfile);
+                                         }).catch(() => {
+                                             setStatus("error");
+                                         });
+                                     }}/>
                     </div>
                     <div className={"d-flex mt-3 ms-3 me-3 pb-3 border-bottom align-items-center"}>
                         <h3>{t("profile.info.name.title")}</h3>
                         <div className={"d-flex flex-column flex-md-row ms-5"}>
-                            <p className={"mb-0"}>{user && user.profile.name ? user.profile.name : t("profile.info.name.not_set")}</p>
+                            <p className={"mb-0"}>{userInfo && userInfo.name ? userInfo.name : t("profile.info.name.not_set")}</p>
                             <Button variant={"link"}
                                     className={"ms-0 ms-md-3 p-0"}
                                     onClick={() => {
@@ -83,15 +78,12 @@ export function Profile() {
                                 {t("profile.info.name.change_name")}
                             </Button>
                         </div>
-                        <EditInfo user={user} show={infoModifying} handleHide={() => {
+                        <EditInfo info={userInfo} show={infoModifying} handleHide={() => {
                             setInfoModifying(false);
-                            getUserInfo().then((user) => {
-                                if (!user) {
-                                    setStatus("error");
-                                } else {
-                                    setUser(user);
-                                    setStatus("success");
-                                }
+                            getUserInfo().then((updatedProfile) => {
+                                setUserInfo(updatedProfile);
+                            }).catch(() => {
+                                setStatus("error");
                             });
                         }}/>
                     </div>
@@ -111,25 +103,25 @@ export function Profile() {
                             <div>
                                 <div className={"d-flex flex-column flex-md-row"}>
                                     <p className={"mb-0"}>
-                                        {user && user.profile.email ?
-                                            user.profile.email : t("profile.email.not_set")}
+                                        {userInfo && userInfo.email ?
+                                            userInfo.email : t("profile.email.not_set")}
                                     </p>
                                     <Button variant={"link"}
                                             className={"ms-0 ms-md-3 p-0"}
                                             onClick={() => {
                                                 setEmailModifying(true)
                                             }}>
-                                        {user && user.profile.email ?
+                                        {userInfo && userInfo.email ?
                                             t("profile.email.change_email") : t("profile.email.set_email")}
                                     </Button>
                                 </div>
                             </div>
-                            {user?.profile.email ? user?.profile.email_verified ?
+                            {userInfo?.email && (userInfo?.email_verified ?
                                 <div>
                                     <Image className={"text-success"} src={checkedIcon} width={16} height={16}/>
                                     <span className={"ms-1 text-muted"}>
-                                {t("profile.email.email_verified")}
-                            </span>
+                                        {t("profile.email.email_verified")}
+                                    </span>
                                 </div> :
                                 <div className={"d-flex align-items-baseline"}>
                                     <Image src={closedIcon} width={16} height={16}/>
@@ -143,20 +135,18 @@ export function Profile() {
                                             className={"text-secondary"}>
                                         {t("profile.email.verify_now")}
                                     </Button>
-                                </div> : null}
+                                </div>)}
                         </div>
                     </div>
-                    <EditEmail user={user} show={emailModifying}
+                    <EditEmail email={userInfo && userInfo.email ? userInfo.email : null}
+                               show={emailModifying}
                                handleHide={() => {
                                    setEmailModifying(false);
-                                   getUserInfo().then((user) => {
-                                       if (!user) {
-                                             setStatus("error");
-                                       } else {
-                                            setUser(user);
-                                            setStatus("success");
-                                       }
-                                      });
+                                   getUserInfo().then((updatedProfile) => {
+                                       setUserInfo(updatedProfile);
+                                   }).catch(() => {
+                                       setStatus("error");
+                                   });
                                }}/>
                     <div className={"d-flex mt-3 ms-3 me-3 pb-3 border-bottom align-items-center"}>
                         <h3>{t("profile.phone.title")}</h3>
@@ -164,20 +154,20 @@ export function Profile() {
                             <div>
                                 <div className={"d-flex flex-column flex-md-row"}>
                                     <p className={"mb-0"}>
-                                        {user && user.profile.phone_number ?
-                                            user.profile.phone_number : t("profile.phone.not_set")}
+                                        {userInfo && userInfo.phone_number ?
+                                            userInfo.phone_number : t("profile.phone.not_set")}
                                     </p>
                                     <Button variant={"link"}
                                             className={"ms-0 ms-md-3 p-0"}
                                             onClick={() => {
                                                 setPhoneModifying(true)
                                             }}>
-                                        {user && user.profile.phone_number ?
+                                        {userInfo && userInfo.phone_number ?
                                             t("profile.phone.change_phone") : t("profile.phone.set_phone")}
                                     </Button>
                                 </div>
                             </div>
-                            {user?.profile.phone_number ? user?.profile.phone_number_verified ?
+                            {userInfo?.phone_number && (userInfo?.phone_number_verified ?
                                 <div>
                                     <Image className={"text-success"} src={checkedIcon} width={16} height={16}/>
                                     <span className={"ms-1 text-muted"}>
@@ -192,43 +182,26 @@ export function Profile() {
                                     <Button variant={"link"}
                                             onClick={() => {
                                                 setPhoneModifying(true);
-                                                getUserInfo().then((user) => {
-                                                    if (!user) {
-                                                        setStatus("error");
-                                                    } else {
-                                                        setUser(user);
-                                                        setStatus("success");
-                                                    }
-                                                });
                                             }}
                                             className={"text-secondary"}>
                                         {t("profile.phone.verify_now")}
                                     </Button>
-                                </div> : null}
+                                </div>)}
                         </div>
                     </div>
-                    <EditPhone user={user} show={phoneModifying} handleHide={() => setPhoneModifying(false)}/>
+                    <EditPhone phoneNumber={userInfo && userInfo.phone_number ? userInfo.phone_number : null}
+                               show={phoneModifying}
+                               handleHide={() => {
+                                   setPhoneModifying(false);
+                                   getUserInfo().then((updatedProfile) => {
+                                       setUserInfo(updatedProfile);
+                                   }).catch(() => {
+                                       setStatus("error");
+                                   });
+                               }}/>
                 </Card.Body>
             </Card>
         </Container>
     );
 }
 
-async function getUserInfo(): Promise<User | null> {
-    const auth = await userManager.getUser();
-    if (!auth) return null;
-    const response = await fetch("/api/userinfo", {
-        method: "GET",
-        headers: {
-            Authorization: `${auth.token_type} ${auth.access_token}`
-        }
-    });
-    if (response.ok) {
-        response.json().then((data) => {
-           auth.profile = data;
-        });
-        return auth;
-    } else {
-        return null;
-    }
-}

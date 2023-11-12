@@ -1,22 +1,28 @@
 import {Alert, Button, Form, Modal} from "react-bootstrap";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {User} from "oidc-client-ts";
+import {UserInfo} from "./profileUtils";
+import {userManager} from "../../../auth/userManager";
 
 export function EditInfo(props: {
     show: boolean,
-    user: User | null,
+    info: UserInfo | null,
     handleHide: () => void
 }) {
     const [status, setStatus] =
         React.useState<"idle" | "submitted" | "error" | "success">("idle");
-    const [name, setName] = React.useState("");
-
+    const [name, setName] = React.useState(
+        props.info && props.info.name ? props.info.name : ""
+    );
+    const handleClose = () => {
+        setStatus("idle");
+        props.handleHide();
+    }
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (props.user) {
+        if (props.info && name !== props.info.name) {
             setStatus("submitted");
-            putNameUpdate(name, props.user).then(
+            putNameUpdate(name).then(
                 (response) => {
                     if (response.status === 200) {
                         setStatus("success");
@@ -29,10 +35,7 @@ export function EditInfo(props: {
             });
         }
     }
-    const handleClose = () => {
-        setStatus("idle");
-        props.handleHide();
-    }
+
     const {t} = useTranslation();
     return (
         <Modal show={props.show} onHide={handleClose} backdrop={"static"}>
@@ -61,7 +64,9 @@ export function EditInfo(props: {
     );
 }
 
-async function putNameUpdate(name: string, user: User) {
+async function putNameUpdate(name: string) {
+    const user = await userManager.getUser();
+    if (user === null) throw new Error("User is null");
     const res = await fetch(`/api/account/info`, {
         method: "PUT",
         headers: {
@@ -71,7 +76,7 @@ async function putNameUpdate(name: string, user: User) {
         body: JSON.stringify({name: name})
     });
     if (res.ok) {
-        return res.json();
+        return await res.json();
     } else {
         throw new Error("Failed to update name");
     }
