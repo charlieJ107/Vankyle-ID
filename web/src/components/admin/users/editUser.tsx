@@ -11,7 +11,7 @@ export function EditUser() {
     const [status, setStatus] = useState("loading");
     const [error, setError] = useState<null | string>(null);
     const [user, setUser] = useState<UserInterface | null>(null);
-    const userId = window.location.pathname.split("/").pop();
+    const userId = window.location.pathname.split("/").pop()?.split("?")[0] || null;
     const navigate = useNavigate();
     useEffect(() => {
         if (!userId) {
@@ -45,7 +45,6 @@ export function EditUser() {
 
     const onSubmit = (user: UserInterface) => {
         putUser(userId || user.id, user).then((response) => {
-            // Convert the if else below to a switch statement
             switch (response.status) {
                 case 2000:
                     setUser(response.user);
@@ -74,6 +73,7 @@ export function EditUser() {
             <Container>
                 <h1>{t("admin.user.detail.title")}</h1>
                 {status === "success" && <Alert variant="success">{t("admin.user.detail.success")}</Alert>}
+                {error && <Alert variant="danger">{error}</Alert>}
                 <UserForm user={user} setUser={setUser} onSubmit={onSubmit}
                           onReset={() => navigate("/admin/users")}/>
             </Container>
@@ -93,11 +93,9 @@ export function EditUser() {
 }
 
 async function getUser(userId: string) {
-    const user = await userManager.getUser()
-    if (user === null) {
-        userManager.signinRedirect().then();
-        throw new Error("User not logged in");
-    }
+    const user = await userManager.getUser();
+    if (user === null) throw new Error("User not logged in");
+
     return fetch(`/api/admin/user/` + userId, {
         method: "GET",
         headers: {
