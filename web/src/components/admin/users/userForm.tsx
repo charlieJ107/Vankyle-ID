@@ -74,9 +74,12 @@ export function UserForm({user, setUser, onSubmit, onReset}: {
                         );
                     })}
                     <tr>
-                        <td><Form.Control type="text" value={newAuthority} onChange={(e) => {
-                            setNewAuthority(e.target.value);
-                        }}/></td>
+                        <td>
+                            <Form.Control type="text" value={newAuthority}
+                                          onChange={(e) => {
+                                              setNewAuthority(e.target.value);
+                                          }}/>
+                        </td>
                         <td><Button variant="primary" size="sm" onClick={() => {
                             setUser({...user, authorities: [...user.authorities!, newAuthority]});
                             setNewAuthority("");

@@ -53,7 +53,7 @@ export function Oidc() {
                 hasToken.current = true;
             }
         }
-    }, []);
+    }, [searchParams]);
     const {t} = useTranslation();
     if (state.status === "success") {
         return (
