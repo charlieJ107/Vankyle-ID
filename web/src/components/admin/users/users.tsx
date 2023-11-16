@@ -1,4 +1,3 @@
-import config from "../../../config/config";
 import {Alert, Button, Container, Table} from "react-bootstrap";
 import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
@@ -69,7 +68,7 @@ async function getUsers() {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`${config.api_url}/admin/user/`, {
+    return fetch(`/api/admin/user/`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

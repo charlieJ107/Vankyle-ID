@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {useSearchParams} from "react-router-dom";
 import {userManager} from "../../auth/userManager";
@@ -14,6 +14,7 @@ export function Oidc() {
         errorUrl?: string,
         state?: string
     }>({status: "loading"});
+    const hasToken = useRef<boolean>(false);
     useEffect(() => {
         if (searchParams.has("error")) {
             // OAuth2 Error
@@ -29,21 +30,30 @@ export function Oidc() {
                 state: state === null ? undefined : state
             });
         } else {
-            userManager.signinRedirectCallback().then((user) => {
-                if (user.state) {
-                    setState({status: "success"});
-                    window.location.replace(user.state as string);
-                } else {
-                    setState({status: "success"});
+            if (!hasToken.current) {
+                userManager.signinCallback(window.location.href).then((user) => {
+                    if (user) {
+                        if (user.state) {
+                            setState({status: "success"});
+                            window.location.replace(user.state as string);
+                        } else {
+                            setState({status: "success"});
+                            window.location.assign("/");
+                        }
+                    } else {
+                        setState({status: "error"});
+                        console.error("User is null");
+                        window.location.assign("/");
+                    }
+                }).catch((error) => {
+                    setState({status: "error"});
+                    console.error(error);
                     window.location.assign("/");
-                }
-            }).catch((error) => {
-                setState({status: "success"});
-                console.error(error);
-                window.location.pathname = "/";
-            });
+                });
+                hasToken.current = true;
+            }
         }
-    }, [searchParams, setState]);
+    }, [searchParams]);
     const {t} = useTranslation();
     if (state.status === "success") {
         return (

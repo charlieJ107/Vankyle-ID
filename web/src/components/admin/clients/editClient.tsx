@@ -5,7 +5,6 @@ import {useNavigate} from "react-router-dom";
 import {Alert, Button, Container} from "react-bootstrap";
 import {ClientForm} from "./clientForm";
 import {Loading} from "../../shared/loading";
-import config from "../../../config/config";
 import {userManager} from "../../../auth/userManager";
 
 export function EditClient() {
@@ -96,7 +95,7 @@ async function getClient(id: string) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`${config.api_url}/admin/client/${id}`, {
+    return fetch(`/api/admin/client/${id}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -134,7 +133,7 @@ async function putClient(id: string, data: ClientInterface) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`${config.api_url}/admin/client/${data.id}`, {
+    return fetch(`/api/admin/client/${data.id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

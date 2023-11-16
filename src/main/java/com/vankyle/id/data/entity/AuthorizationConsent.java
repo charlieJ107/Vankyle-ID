@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * JPA entity mapping the domain class(interface) {@link org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent},
  */
-@Data
+@Data // TODO: Data annotation is not recommended for JPA entity class, it can cause performance issue
 @Entity
 @IdClass(AuthorizationConsent.AuthorizationConsentId.class)
 public class AuthorizationConsent {

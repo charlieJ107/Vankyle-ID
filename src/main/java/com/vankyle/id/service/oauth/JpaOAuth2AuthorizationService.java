@@ -6,7 +6,6 @@ import com.vankyle.id.data.repository.AuthorizationRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.security.oauth2.core.AbstractOAuth2Token;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.OAuth2Token;
@@ -21,8 +20,10 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.util.Assert;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService {
@@ -72,10 +73,8 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
         } else if (OAuth2ParameterNames.REFRESH_TOKEN.equals(tokenType.getValue())) {
             result = this.authorizationRepository.findByRefreshToken(token);
         } else {
-            var tokenData = new OAuth2TokenData();
-            tokenData.setTokenType(AbstractOAuth2Token.class);
-            tokenData.setTokenValue(token);
-            result = this.authorizationRepository.findAuthorizationByTokensContains(tokenData);
+            // TODO: Support abstract token
+            throw new IllegalArgumentException("Unsupported token type: " + tokenType.getValue());
         }
 
         return result.map(this::toOAuth2Authorization).orElse(null);
@@ -90,44 +89,52 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
         authorizationEntity.setState(authorization.getAttribute(OAuth2ParameterNames.STATE));
         authorizationEntity.setAuthorizationGrantType(authorization.getAuthorizationGrantType());
         authorizationEntity.setAuthorizedScopes(authorization.getAuthorizedScopes());
-
+        Set<OAuth2TokenData> tokens = new HashSet<>();
         logger.debug("Generating authorization code");
         OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode =
                 authorization.getToken(OAuth2AuthorizationCode.class);
-        setTokenValues(
+        var authorizationCodeTokenData = setTokenValues(
                 authorizationCode,
                 authorizationEntity::setAuthorizationCode,
                 authorizationEntity::setAuthorizationCodeIssuedAt,
                 authorizationEntity::setAuthorizationCodeExpiresAt,
                 authorizationEntity::setAuthorizationCodeMetadata
         );
-
+        if (authorizationCodeTokenData != null) {
+            tokens.add(authorizationCodeTokenData);
+        }
         OAuth2Authorization.Token<OAuth2AccessToken> accessToken =
                 authorization.getToken(OAuth2AccessToken.class);
-        setTokenValues(
+        var accessTokenData = setTokenValues(
                 accessToken,
                 authorizationEntity::setAccessToken,
                 authorizationEntity::setAccessTokenIssuedAt,
                 authorizationEntity::setAccessTokenExpiresAt,
                 authorizationEntity::setAccessTokenMetadata
         );
-        if (accessToken != null && accessToken.getToken().getScopes() != null) {
-            authorizationEntity.setAuthorizedScopes(accessToken.getToken().getScopes());
+        if (accessToken != null) {
+            if (accessToken.getToken().getScopes() != null) {
+                authorizationEntity.setAuthorizedScopes(accessToken.getToken().getScopes());
+            }
+            tokens.add(accessTokenData);
         }
 
         OAuth2Authorization.Token<OAuth2RefreshToken> refreshToken =
                 authorization.getToken(OAuth2RefreshToken.class);
-        setTokenValues(
+        var refreshTokenData = setTokenValues(
                 refreshToken,
                 authorizationEntity::setRefreshToken,
                 authorizationEntity::setRefreshTokenIssuedAt,
                 authorizationEntity::setRefreshTokenExpiresAt,
                 authorizationEntity::setRefreshTokenMetadata
         );
+        if (refreshTokenData != null) {
+            tokens.add(refreshTokenData);
+        }
 
         OAuth2Authorization.Token<OidcIdToken> oidcIdToken =
                 authorization.getToken(OidcIdToken.class);
-        setTokenValues(
+        OAuth2TokenData idTokenData = setTokenValues(
                 oidcIdToken,
                 authorizationEntity::setIdToken,
                 authorizationEntity::setIdTokenIssuedAt,
@@ -135,9 +142,11 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
                 authorizationEntity::setIdTokenMetadata
         );
         if (oidcIdToken != null) {
-            authorizationEntity.setIdTokenClaims(oidcIdToken.getClaims());
+            authorizationEntity.setIdTokenClaims(oidcIdToken.getToken().getClaims());
+            idTokenData.setClaims(oidcIdToken.getToken().getClaims());
+            tokens.add(idTokenData);
         }
-
+        authorizationEntity.setTokens(tokens);
         return authorizationEntity;
     }
 
@@ -197,7 +206,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
         return builder.build();
     }
 
-    private void setTokenValues(
+    private OAuth2TokenData setTokenValues(
             OAuth2Authorization.Token<?> token,
             Consumer<String> tokenValueConsumer,
             Consumer<Instant> issuedAtConsumer,
@@ -209,6 +218,14 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
             issuedAtConsumer.accept(oAuth2Token.getIssuedAt());
             expiresAtConsumer.accept(oAuth2Token.getExpiresAt());
             metadataConsumer.accept(token.getMetadata());
+            var tokenData = new OAuth2TokenData();
+            tokenData.setTokenType(oAuth2Token.getClass());
+            tokenData.setTokenValue(oAuth2Token.getTokenValue());
+            tokenData.setExpiresAt(oAuth2Token.getExpiresAt());
+            tokenData.setIssuedAt(oAuth2Token.getIssuedAt());
+            tokenData.setMetadata(token.getMetadata());
+            return tokenData;
         }
+        return null;
     }
 }
