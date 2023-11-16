@@ -142,7 +142,8 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
                 authorizationEntity::setIdTokenMetadata
         );
         if (oidcIdToken != null) {
-            authorizationEntity.setIdTokenClaims(oidcIdToken.getClaims());
+            authorizationEntity.setIdTokenClaims(oidcIdToken.getToken().getClaims());
+            idTokenData.setClaims(oidcIdToken.getToken().getClaims());
             tokens.add(idTokenData);
         }
         authorizationEntity.setTokens(tokens);
@@ -222,6 +223,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
             tokenData.setTokenValue(oAuth2Token.getTokenValue());
             tokenData.setExpiresAt(oAuth2Token.getExpiresAt());
             tokenData.setIssuedAt(oAuth2Token.getIssuedAt());
+            tokenData.setMetadata(token.getMetadata());
             return tokenData;
         }
         return null;
