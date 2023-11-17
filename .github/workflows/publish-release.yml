@@ -82,6 +82,9 @@ jobs:
 
   publish-web:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     defaults:
       run:
         working-directory: ./web
