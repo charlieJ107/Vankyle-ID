@@ -54,10 +54,10 @@ jobs:
           gradle-version: current
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: vankyle
-          path: build/libs/vankyle-*.jar
+          path: build/libs/*.jar
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2.2.0
@@ -84,7 +84,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
-      contents: read
     defaults:
       run:
         working-directory: ./web
