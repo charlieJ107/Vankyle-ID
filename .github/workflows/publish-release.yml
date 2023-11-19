@@ -9,7 +9,7 @@ name: Publish Release
 
 on:
   release:
-    types: [ created ]
+    types: [ created, unpublished ]
 
 jobs:
   publish-gradle:
