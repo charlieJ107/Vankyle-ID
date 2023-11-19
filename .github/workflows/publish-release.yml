@@ -20,7 +20,7 @@ jobs:
     permissions:
       packages: write
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: release-api-package-${{ github.workflow }}-${{ github.ref }}
 
     steps:
       - uses: actions/checkout@v3
@@ -56,7 +56,7 @@ jobs:
     permissions:
       packages: write
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: release-api-docker-${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
       - name: Log in to the Container registry
@@ -88,7 +88,7 @@ jobs:
       run:
         working-directory: ./web
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: release-web-package-${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
 
@@ -111,17 +111,20 @@ jobs:
 
       - name: Upload to Release
         run: |
-            tar -czvf web.tar.gz web/build/*
+            tar -czvf web.tar.gz build/*
             gh release upload ${{ github.ref }} web.tar.gz --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-docker-web:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
     permissions:
       packages: write
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: release-web-docker-${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
       - name: Log in to the Container registry
