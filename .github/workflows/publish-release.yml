@@ -108,8 +108,8 @@ jobs:
 
       - name: Upload to Release
         run: |
-            tar -czvf web.tar.gz build/*
-            gh release upload ${{ github.ref_name }} web.tar.gz --clobber
+            tar -czvf Vankyle-ID-web-${{ github.ref_name }}.tar.gz build/*
+            gh release upload ${{ github.ref_name }} Vankyle-ID-web-${{ github.ref_name }}.tar.gz --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
