@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload to Release
         run: |
-            gh release upload ${{ github.ref }} build/libs/*.jar --clobber
+            gh release upload ${${{ github.ref_name }}/refs\tags\//} build/libs/*.jar --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -112,7 +112,7 @@ jobs:
       - name: Upload to Release
         run: |
             tar -czvf web.tar.gz build/*
-            gh release upload ${{ github.ref }} web.tar.gz --clobber
+            gh release upload ${{ github.ref_name }} web.tar.gz --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
