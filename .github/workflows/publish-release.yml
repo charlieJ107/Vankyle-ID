@@ -18,7 +18,7 @@ jobs:
   publish-gradle:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
+      contents: write
     concurrency:
       group: release-api-package-${{ github.workflow }}-${{ github.ref }}
 
@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload to Release
         run: |
-            gh release upload ${${{ github.ref_name }}/refs\tags\//} build/libs/*.jar --clobber
+            gh release upload ${{ github.ref_name }} build/libs/*.jar --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -83,7 +83,7 @@ jobs:
   publish-web:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
+      contents: write
     defaults:
       run:
         working-directory: ./web
