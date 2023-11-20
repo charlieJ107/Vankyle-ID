@@ -1,8 +1,4 @@
 FROM node:latest AS node-builder
-ARG PUBLIC_URL=/vankyle-id
-ARG REACT_APP_API_URL=/api
-ARG REACT_APP_OIDC_AUTHORITY=/vankyle-id
-ARG REACT_APP_OIDC_REDIRECT_URI=vankyle-id/oidc
 COPY . /src
 WORKDIR /src
 RUN npm install
