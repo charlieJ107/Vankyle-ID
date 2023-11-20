@@ -11,6 +11,8 @@ import com.vankyle.id.service.security.UserManager;
 import com.vankyle.id.service.validation.ValidationService;
 import jakarta.mail.MessagingException;
 import lombok.Data;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ public class LoginController {
     private final UserManager userManager;
     private final EmailTemplateService emailTemplateService;
     private final ValidationService validationService;
+    private final Log logger = LogFactory.getLog(LoginController.class);
 
     public LoginController(
             EmailSender emailSender,
@@ -93,6 +96,7 @@ public class LoginController {
         } catch (Exception e) {
             var forgotPasswordResponse = new ForgotPasswordResponse();
             forgotPasswordResponse.setStatus(404);
+            logger.error("Failed to find user", e);
             return forgotPasswordResponse;
         }
         // User found
@@ -114,6 +118,7 @@ public class LoginController {
             // Failed to send email
             var forgotPasswordResponse = new ForgotPasswordResponse();
             forgotPasswordResponse.setStatus(500);
+            logger.error("Failed to send email", e);
             return forgotPasswordResponse;
         }
         // Email sent
