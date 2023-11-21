@@ -54,6 +54,7 @@ public class AccountController {
             } catch (MessagingException e) {
                 var response = new SendEmailVerificationCodeResponse();
                 response.setStatus(500);
+                logger.error("Failed to send email verification code", e);
                 return response;
             }
         } else {

@@ -11,6 +11,8 @@ import com.vankyle.id.service.security.UserManager;
 import com.vankyle.id.service.security.UsernameAlreadyExistsException;
 import com.vankyle.id.service.validation.ValidationService;
 import jakarta.mail.MessagingException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,8 @@ public class RegisterController {
     private final ValidationService validationService;
     private final EmailTemplateService emailTemplateService;
     private final UserManager userManager;
+
+    private final Log logger = LogFactory.getLog(RegisterController.class);
 
     public RegisterController(
             EmailSender emailSender,
@@ -66,6 +70,7 @@ public class RegisterController {
             var response = new RegisterResponse();
             // It should not happen, because we have checked if username exists before
             response.setStatus(500);
+            logger.error("Failed to create user, user already exist even if checked", e);
             return response;
         }
 
@@ -84,6 +89,7 @@ public class RegisterController {
         } catch (MessagingException e) {
             var response = new RegisterResponse();
             response.setStatus(500);
+            logger.error("Failed to send email", e);
             return response;
         }
         var response = new RegisterResponse();
