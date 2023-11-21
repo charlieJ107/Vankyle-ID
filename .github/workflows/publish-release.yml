@@ -12,7 +12,7 @@ on:
     types: [ created, unpublished ]
 
 jobs:
-  publish-gradle:
+  publish-api:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -81,7 +81,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/vankyle-id-nginx
+          images: ghcr.io/${{ github.repository }}/vankyle-id-api
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4.1.1
@@ -90,6 +90,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
   publish-web:
     runs-on: ubuntu-latest
     permissions:
@@ -157,6 +158,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
   publish-docker-nginx:
     runs-on: ubuntu-latest
     permissions:
@@ -171,4 +173,17 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/vankyle-id-nginx
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4.1.1
+        with:
+          context: web
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
