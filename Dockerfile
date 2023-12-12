@@ -1,4 +1,4 @@
-FROM gradle:8.3.1-jdk17-jammy AS java-builder
+FROM gradle:8.3-jdk17-jammy AS java-builder
 
 COPY . /home/gradle/src
 WORKDIR /home/gradle/src
