@@ -67,7 +67,7 @@ async function createUser(data: UserInterface) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`/api/admin/user/`, {
+    return fetch(`/api/admin/users/`, {
         method: "POST",
         headers: {
             "Accept": "application/json",

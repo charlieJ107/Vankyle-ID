@@ -68,7 +68,7 @@ async function getUsers() {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`/api/admin/user/`, {
+    return fetch(`/api/admin/users/`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

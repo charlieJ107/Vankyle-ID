@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("${vankyle.id.api-path}/admin/user")
+@RequestMapping("${vankyle.id.api-path}/admin/users")
 public class UserController {
     private final UserManager userManager;
 

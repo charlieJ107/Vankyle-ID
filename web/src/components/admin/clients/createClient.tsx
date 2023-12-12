@@ -77,12 +77,13 @@ export function CreateClient() {
 async function createClient(data: ClientInterface) {
     const user = await userManager.getUser();
     if (!user) {
+        // TODO: Use sign out when backend supports it
         userManager.removeUser().then();
         userManager.revokeTokens().then();
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`/api/admin/client/`, {
+    return fetch(`/api/admin/clients/`, {
         method: "POST",
         headers: {
             "Accept": "application/json",

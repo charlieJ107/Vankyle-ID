@@ -64,7 +64,7 @@ async function getClients() {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`/api/admin/client/`, {
+    return fetch(`/api/admin/clients/`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
