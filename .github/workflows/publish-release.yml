@@ -16,9 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    concurrency:
-      group: release-api-package-${{ github.workflow }}-${{ github.ref }}
-
     steps:
       - uses: actions/checkout@v3
 
@@ -52,8 +49,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
-    concurrency:
-      group: release-api-docker-${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
       - name: Log in to the Container registry
@@ -98,8 +93,6 @@ jobs:
     defaults:
       run:
         working-directory: ./web
-    concurrency:
-      group: release-web-package-${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
 
@@ -134,8 +127,6 @@ jobs:
         working-directory: ./web
     permissions:
       packages: write
-    concurrency:
-      group: release-web-docker-${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
       - name: Log in to the Container registry
@@ -163,8 +154,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
-    concurrency:
-      group: release-nginx-docker-${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
       - name: Log in to the Container registry
