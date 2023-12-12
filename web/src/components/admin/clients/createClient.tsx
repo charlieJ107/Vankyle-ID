@@ -42,7 +42,7 @@ export function CreateClient() {
     const onSubmit = (client: ClientInterface) => {
         createClient(client).then((response) => {
             if (response.status === 2000) {
-                setClient(response);
+                setClient(response.client);
                 setStatus("success");
                 setError(null);
             } else if (response.status === 4000) {
