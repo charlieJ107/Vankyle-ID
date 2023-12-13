@@ -18,7 +18,7 @@ export function Layout(props: {
     const {t} = useTranslation();
     return (
         <Row className={"vw-100"}>
-            <Col className={"col-3"}>
+            <Col className={"col-lg-2"}>
                 <Navbar className={"d-flex flex-column flex-shrink p-3 bg-light border-end h-100"}>
                     <Navbar.Brand className={"d-flex align-items-center justify-content-center w-100"} href="/">
                         <Image src={logo} alt="logo" width="64" height="48"
@@ -45,7 +45,7 @@ export function Layout(props: {
                     </Navbar.Collapse>
                 </Navbar>
             </Col>
-            <Col>
+            <Col className={"mx-lg-5 mx-3"}>
                 {props.children}
             </Col>
         </Row>
