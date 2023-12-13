@@ -18,10 +18,10 @@ export function Admin() {
                 <Route index element={<Navigate to={"users"}/>}/>
                 <Route path={"users"} element={<Users/>}/>
                 <Route path={"users/:id"} element={<EditUser/>}/>
-                <Route path={"user/create"} element={<CreateUser/>}/>
+                <Route path={"users/create"} element={<CreateUser/>}/>
                 <Route path={"clients"} element={<Clients/>}/>
                 <Route path={"clients/:id"} element={<EditClient/>}/>
-                <Route path={"client/create"} element={<CreateClient/>}/>
+                <Route path={"clients/create"} element={<CreateClient/>}/>
                 <Route path={"*"} element={<NotFound/>}/>
             </Routes>
         </AdminLayout>

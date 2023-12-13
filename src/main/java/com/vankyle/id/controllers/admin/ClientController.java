@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("${vankyle.id.api-path}/admin/client")
+@RequestMapping("${vankyle.id.api-path}/admin/clients")
 public class ClientController {
     private final RegisteredClientService registeredClientService;
 

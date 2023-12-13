@@ -126,7 +126,7 @@ async function putUser(userId: string, user: UserInterface) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`/api/admin/user/` + userId, {
+    return fetch(`/api/admin/users/` + userId, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

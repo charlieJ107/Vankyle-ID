@@ -133,7 +133,7 @@ async function putClient(id: string, data: ClientInterface) {
         userManager.signinRedirect().then();
         throw new Error("User not logged in");
     }
-    return fetch(`/api/admin/client/${data.id}`, {
+    return fetch(`/api/admin/clients/${data.id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
