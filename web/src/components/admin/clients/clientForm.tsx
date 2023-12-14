@@ -2,7 +2,7 @@ import {AuthorizationGrantType, ClientAuthenticationMethod, ClientInterface, Jws
 import {useTranslation} from "react-i18next";
 import React from "react";
 import {Button, Form, Table} from "react-bootstrap";
-
+import {Dash, Plus} from 'react-bootstrap-icons';
 export function ClientForm({client, setClient, onSubmit, onReset}: {
     client: ClientInterface,
     setClient: (client: ClientInterface) => void,
@@ -65,7 +65,9 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                                         clientAuthenticationMethods: client.clientAuthenticationMethods
                                             .filter((_, i) => i !== index)
                                     });
-                                }}>-</Button>
+                                }}>
+                                    <Dash />
+                                </Button>
                             </td>
                         </tr>))}
                     <tr>
@@ -99,7 +101,7 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                                     clientAuthenticationMethods: [...client.clientAuthenticationMethods, newAuthenticationMethod]
                                 });
                             }}>
-                                +
+                                <Plus />
                             </Button>
                         </td>
                     </tr>
@@ -130,7 +132,7 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                                         authorizationGrantTypes: client.authorizationGrantTypes
                                             .filter((_, i) => i !== index)
                                     });
-                                }}>-</Button>
+                                }}><Dash /></Button>
                             </td>
                         </tr>))}
                     <tr>
@@ -159,7 +161,7 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                                     authorizationGrantTypes: [...client.authorizationGrantTypes, newGrantType]
                                 });
                             }}>
-                                +
+                                <Plus />
                             </Button>
                         </td>
                     </tr>
@@ -185,7 +187,7 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                                         ...client,
                                         redirectUris: client.redirectUris.filter((_, i) => i !== index)
                                     });
-                                }}>-</Button>
+                                }}><Dash /></Button>
                             </td>
                         </tr>))}
                     <tr>
@@ -201,7 +203,7 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                                     redirectUris: [...client.redirectUris, newRedirectUri]
                                 });
                             }}>
-                                +
+                                <Plus />
                             </Button>
                         </td>
                     </tr>
@@ -227,7 +229,7 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                                         ...client,
                                         scopes: client.scopes.filter((_, i) => i !== index)
                                     });
-                                }}>-</Button>
+                                }}><Dash /></Button>
                             </td>
                         </tr>))}
                     <tr>
@@ -243,7 +245,7 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                                     scopes: [...client.scopes, newScope]
                                 });
                             }}>
-                                +
+                                <Plus />
                             </Button>
                         </td>
                     </tr>

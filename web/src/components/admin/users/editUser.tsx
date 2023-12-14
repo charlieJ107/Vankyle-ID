@@ -96,7 +96,7 @@ async function getUser(userId: string) {
     const user = await userManager.getUser();
     if (user === null) throw new Error("User not logged in");
 
-    return fetch(`/api/admin/user/` + userId, {
+    return fetch(`/api/admin/users/` + userId, {
         method: "GET",
         headers: {
             "Accept": "application/json",

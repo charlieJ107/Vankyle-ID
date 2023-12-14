@@ -26,7 +26,7 @@ export function Users() {
             <h1>{t("admin.user.title")}</h1>
             {error && <Alert variant={"danger"}>{t("admin.user.error")} {error}</Alert>}
             <div>
-                <Button className={"my-3"} variant={"primary"} href={"/admin/user/create"}>
+                <Button className={"my-3"} variant={"primary"} href={"/admin/users/create"}>
                     {t("admin.user.create")}
                 </Button>
             </div>

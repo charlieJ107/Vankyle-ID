@@ -26,7 +26,7 @@ export function Clients() {
             {error && <Alert variant={"danger"}>{t("admin.client.error")} {error}</Alert>}
             <div>
                 <Button className={"my-3"} variant={"primary"}
-                        href={"/admin/client/create"}>{t("admin.client.create")}</Button>
+                        onClick={()=>navigate("/admin/clients/create")}>{t("admin.client.create")}</Button>
             </div>
             <Table striped bordered hover>
                 <thead>
@@ -46,7 +46,7 @@ export function Clients() {
                             <td>{client.clientName}</td>
                             <td className={"d-flex gap-3"}>
                                 <Button variant={"primary"}
-                                        href={"/admin/clients/" + client.id}>{t("admin.client.edit")}</Button>
+                                        onClick={()=>navigate("/admin/clients/" + client.id)}>{t("admin.client.edit")}</Button>
                                 <Button disabled variant={"danger"}>{t("admin.client.delete")}</Button>
                             </td>
                         </tr>

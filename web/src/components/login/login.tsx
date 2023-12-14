@@ -115,6 +115,10 @@ function postLogin({username, password, rememberMe}: { username: string, passwor
     }).then(response => {
         if (response.ok) {
             return response.json();
+        } else if (response.status === 401) {
+            return {status: 401} as { status: number, redirectUrl?: string };
+        } else if (response.status === 403) {
+            return {status: 403} as { status: number, redirectUrl?: string };
         } else {
             throw new Error("Login failed");
         }

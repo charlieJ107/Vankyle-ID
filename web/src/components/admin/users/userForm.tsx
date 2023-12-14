@@ -2,6 +2,7 @@ import {Button, Form, Table} from "react-bootstrap";
 import {UserInterface} from "./userInterface";
 import {useTranslation} from "react-i18next";
 import React from "react";
+import {Dash, Plus} from "react-bootstrap-icons";
 
 export function UserForm({user, setUser, onSubmit, onReset}: {
     user: UserInterface,
@@ -67,7 +68,7 @@ export function UserForm({user, setUser, onSubmit, onReset}: {
                                             authorities: user.authorities!.filter((item) => item !== authority)
                                         });
                                     }}>
-                                        -
+                                        <Dash />
                                     </Button>
                                 </td>
                             </tr>
@@ -83,7 +84,7 @@ export function UserForm({user, setUser, onSubmit, onReset}: {
                         <td><Button variant="primary" size="sm" onClick={() => {
                             setUser({...user, authorities: [...user.authorities!, newAuthority]});
                             setNewAuthority("");
-                        }}>+</Button></td>
+                        }}><Plus /></Button></td>
                     </tr>
                     </tbody>
                 </Table>
@@ -106,7 +107,7 @@ export function UserForm({user, setUser, onSubmit, onReset}: {
                                     <Button variant="danger" size="sm" onClick={() => {
                                         setUser({...user, roles: user.roles!.filter((item) => item !== role)});
                                     }}>
-                                        -
+                                        <Dash />
                                     </Button>
                                 </td>
                             </tr>
@@ -128,7 +129,7 @@ export function UserForm({user, setUser, onSubmit, onReset}: {
                                 setUser({...user, roles: [...user.roles!, newRole]});
                                 setNewRole("");
                             }}>
-                                +
+                                <Plus />
                             </Button>
                         </td>
                     </tr>
@@ -175,7 +176,7 @@ export function UserForm({user, setUser, onSubmit, onReset}: {
                                  setUser({...user, phoneVerified: e.target.checked});
                              }}/>
             </Form.Group>
-            <Form.Group>
+            <Form.Group className={"w-25 my-4 d-flex justify-content-around"}>
                 <Button variant="primary" type="submit">{t("admin.user.form.submit")}</Button>
                 <Button variant="secondary" type="reset">{t("admin.user.form.cancel")}</Button>
             </Form.Group>
