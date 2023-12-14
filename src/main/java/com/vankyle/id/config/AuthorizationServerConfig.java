@@ -111,9 +111,8 @@ public class AuthorizationServerConfig {
                 .clientIdIssuedAt(Instant.now())
                 .clientName("Vankyle ID")
                 .clientSecret("client_secret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri("/oidc")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
@@ -123,9 +122,10 @@ public class AuthorizationServerConfig {
                 .scope("roles")
                 .clientSettings(
                         ClientSettings.builder()
-                                .requireAuthorizationConsent(true)
-                                .build())
-                .build();
+                                .requireProofKey(true)
+                                .requireAuthorizationConsent(false)
+                                .build()
+                ).build();
         if (registeredClientRepository.findByClientId("account") == null) {
             registeredClientRepository.save(account_frontend);
         } else {
