@@ -5,21 +5,21 @@ import {userManager} from "../../auth/userManager";
 export function Logout() {
     useEffect(() => {
         userManager.signoutRedirect().then();
-        // postLogout().then((res) => {
-        //     switch (res.status) {
-        //         case 200:
-        //             userManager.signoutRedirect().then();
-        //             window.location.href = "/";
-        //             break;
-        //         case 302:
-        //             userManager.signoutRedirect().then();
-        //             window.location.href = res.redirectUrl;
-        //             break;
-        //         default:
-        //             userManager.signoutRedirect().then();
-        //             window.location.href = "/";
-        //     }
-        // });
+        postLogout().then(() => {
+            // switch (res.status) {
+            //     case 200:
+            //         userManager.signoutRedirect().then();
+            //         window.location.href = "/";
+            //         break;
+            //     case 302:
+            //         userManager.signoutRedirect().then();
+            //         window.location.href = res.redirectUrl;
+            //         break;
+            //     default:
+            //         userManager.signoutRedirect().then();
+            //         window.location.href = "/";
+            // }
+        });
     });
     return (<Loading/>);
 }
