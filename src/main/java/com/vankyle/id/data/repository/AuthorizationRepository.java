@@ -16,6 +16,12 @@ public interface AuthorizationRepository extends JpaRepository<Authorization, St
 
     Optional<Authorization> findByRefreshToken(String refreshToken);
 
+    Optional<Authorization> findByIdToken(String idToken);
+
+    Optional<Authorization> findByUserCode(String userCode);
+
+    Optional<Authorization> findByDeviceCode(String deviceCode);
+
     Optional<Authorization> findAuthorizationByAuthorizationCodeOrAccessTokenOrRefreshToken(
             String authorizationCode,
             String accessToken,

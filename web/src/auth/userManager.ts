@@ -1,8 +1,5 @@
 import {UserManager, UserManagerSettings} from "oidc-client-ts";
 
-
-
-
 const userManagerSettings: UserManagerSettings = {
     authority: "/",
     redirect_uri: "/oidc",

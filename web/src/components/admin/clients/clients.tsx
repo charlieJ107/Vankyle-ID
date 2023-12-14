@@ -78,9 +78,7 @@ async function getClients() {
                 status: response.status
             }
         } else if (response.status === 401) {
-            userManager.removeUser().then();
-            userManager.revokeTokens().then();
-            userManager.signinRedirect().then();
+            userManager.signoutRedirect().then();
         } else {
             throw new Error(response.status + ": " + response.statusText);
         }

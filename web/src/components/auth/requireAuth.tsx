@@ -43,9 +43,8 @@ export function RequireAuth(props: {
                     setStatus("success");
                 }
             }
-        }).catch(() => {
-            userManager.removeUser().then();
-            userManager.revokeTokens().then();
+        }).catch((e) => {
+            userManager.signoutRedirect().then();
         });
     }, [props, setStatus]);
     switch (status) {

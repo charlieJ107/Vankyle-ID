@@ -78,9 +78,7 @@ async function createClient(data: ClientInterface) {
     const user = await userManager.getUser();
     if (!user) {
         // TODO: Use sign out when backend supports it
-        userManager.removeUser().then();
-        userManager.revokeTokens().then();
-        userManager.signinRedirect().then();
+        userManager.signoutRedirect().then();
         throw new Error("User not logged in");
     }
     return fetch(`/api/admin/clients/`, {
@@ -95,9 +93,7 @@ async function createClient(data: ClientInterface) {
         if (response.ok) {
             return response.json();
         } else if (response.status === 401) {
-            userManager.removeUser().then();
-            userManager.revokeTokens().then();
-            userManager.signinRedirect().then();
+            userManager.signoutRedirect().then();
         } else {
             throw new Error("Error creating user");
         }
