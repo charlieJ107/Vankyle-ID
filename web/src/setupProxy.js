@@ -3,7 +3,7 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {
-    ["/api", "/oauth2", "/connect", "/userinfo", "/.well-known"].forEach(path => {
+    ["/api/*", "/oauth2/*", "/connect/*", "/.well-known/*"].forEach(path => {
         app.use(path,
             createProxyMiddleware({
                 target: "http://127.0.0.1:8080",
