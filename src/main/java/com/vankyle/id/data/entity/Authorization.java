@@ -32,6 +32,7 @@ public class Authorization {
     @Column(columnDefinition = "text")
     @Convert(converter = ObjectMapConverter.class)
     private Map<String, Object> attributes;
+
     @Column(columnDefinition = "text")
     private String authorizationCode;
     private Instant authorizationCodeIssuedAt;
@@ -39,6 +40,7 @@ public class Authorization {
     @Column(columnDefinition = "text")
     @Convert(converter = ObjectMapConverter.class)
     private Map<String, Object> authorizationCodeMetadata;
+
     @Column(columnDefinition = "text")
     private String accessToken;
     private Instant accessTokenIssuedAt;
@@ -46,6 +48,7 @@ public class Authorization {
     @Column(columnDefinition = "text")
     @Convert(converter=ObjectMapConverter.class)
     private Map<String, Object> accessTokenMetadata;
+
     @Column(columnDefinition = "text")
     private String refreshToken;
     private Instant refreshTokenIssuedAt;
@@ -64,4 +67,20 @@ public class Authorization {
     @Column(columnDefinition = "text")
     @Convert(converter=ObjectMapConverter.class)
     private Map<String, Object> idTokenClaims;
+
+    @Column(columnDefinition = "text")
+    private String deviceCode;
+    private Instant deviceCodeIssuedAt;
+    private Instant deviceCodeExpiresAt;
+    @Column(columnDefinition = "text")
+    @Convert(converter=ObjectMapConverter.class)
+    private Map<String, Object> deviceCodeMetadata;
+
+    @Column(columnDefinition = "text")
+    private String userCode;
+    private Instant userCodeIssuedAt;
+    private Instant userCodeExpiresAt;
+    @Column(columnDefinition = "text")
+    @Convert(converter=ObjectMapConverter.class)
+    private Map<String, Object> userCodeMetadata;
 }

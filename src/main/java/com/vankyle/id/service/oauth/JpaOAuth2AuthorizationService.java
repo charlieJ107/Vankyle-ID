@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
@@ -59,7 +60,6 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
         Assert.hasText(token, "token cannot be empty");
-
         Optional<Authorization> result;
         if (tokenType == null) {
             result = this.authorizationRepository.findAuthorizationByAuthorizationCodeOrAccessTokenOrRefreshToken(
@@ -72,11 +72,15 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
             result = this.authorizationRepository.findByAccessToken(token);
         } else if (OAuth2ParameterNames.REFRESH_TOKEN.equals(tokenType.getValue())) {
             result = this.authorizationRepository.findByRefreshToken(token);
+        } else if (OidcParameterNames.ID_TOKEN.equals(tokenType.getValue())) {
+            result = this.authorizationRepository.findByIdToken(token);
+        } else if (OAuth2ParameterNames.USER_CODE.equals(tokenType.getValue())) {
+            result = this.authorizationRepository.findByUserCode(token);
+        } else if (OAuth2ParameterNames.DEVICE_CODE.equals(tokenType.getValue())) {
+            result = this.authorizationRepository.findByDeviceCode(token);
         } else {
-            // TODO: Support abstract token
-            throw new IllegalArgumentException("Unsupported token type: " + tokenType.getValue());
+            result = Optional.empty();
         }
-
         return result.map(this::toOAuth2Authorization).orElse(null);
     }
 

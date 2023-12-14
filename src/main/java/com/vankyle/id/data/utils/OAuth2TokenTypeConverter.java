@@ -2,10 +2,8 @@ package com.vankyle.id.data.utils;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.springframework.security.oauth2.core.AbstractOAuth2Token;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.OAuth2RefreshToken;
-import org.springframework.security.oauth2.core.OAuth2Token;
+import org.springframework.security.oauth2.core.*;
+import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode;
@@ -35,6 +33,10 @@ public class OAuth2TokenTypeConverter implements AttributeConverter<Class<? exte
             return Jwt.class;
         } else if (dbData.equals(OidcIdToken.class.getName())) {
             return OidcIdToken.class;
+        } else if (dbData.equals(OAuth2ParameterNames.USER_CODE)) {
+            return OAuth2UserCode.class;
+        } else if (dbData.equals(OAuth2ParameterNames.DEVICE_CODE)) {
+            return OAuth2DeviceCode.class;
         } else {
             return AbstractOAuth2Token.class;
         }
