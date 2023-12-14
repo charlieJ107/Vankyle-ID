@@ -9,7 +9,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
     # Proxy pass the request to the backend server at /api, /oauth2, /swagger, and /.well-known
-    location ~^/(api|oauth2|userinfo|.well-known|swagger) {
+    location ~^/(api|oauth2|userinfo|.well-known|swagger|connect) {
         proxy_pass ${BACKEND_URL};
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
