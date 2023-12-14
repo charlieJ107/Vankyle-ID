@@ -62,9 +62,7 @@ export function CreateUser() {
 async function createUser(data: UserInterface) {
     const user = await userManager.getUser();
     if (!user) {
-        userManager.removeUser().then();
-        userManager.revokeTokens().then();
-        userManager.signinRedirect().then();
+        userManager.signoutRedirect().then();
         throw new Error("User not logged in");
     }
     return fetch(`/api/admin/users/`, {
@@ -79,9 +77,7 @@ async function createUser(data: UserInterface) {
         if (response.ok) {
             return response.json();
         } else if (response.status === 401) {
-            userManager.removeUser().then();
-            userManager.revokeTokens().then();
-            userManager.signinRedirect().then();
+            userManager.signoutRedirect().then();
         } else if (response.status === 403) {
             return {
                 status: response.status

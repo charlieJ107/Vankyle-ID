@@ -79,9 +79,7 @@ async function getUsers() {
             if (res.ok) {
                 return res.json()
             } else if (res.status === 401) {
-                userManager.removeUser().then();
-                userManager.revokeTokens().then();
-                userManager.signinRedirect().then();
+                userManager.signoutRedirect().then();
             } else if (res.status === 403) {
                 return {
                     status: res.status

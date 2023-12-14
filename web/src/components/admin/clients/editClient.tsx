@@ -90,9 +90,7 @@ export function EditClient() {
 async function getClient(id: string) {
     const user = await userManager.getUser();
     if (!user) {
-        userManager.removeUser().then();
-        userManager.revokeTokens().then();
-        userManager.signinRedirect().then();
+        userManager.signoutRedirect().then();
         throw new Error("User not logged in");
     }
     return fetch(`/api/admin/clients/${id}`, {
@@ -107,9 +105,7 @@ async function getClient(id: string) {
             return response.json();
         }
         if (response.status === 401) {
-            userManager.removeUser().then();
-            userManager.revokeTokens().then();
-            userManager.signinRedirect().then();
+            userManager.signoutRedirect().then();
             throw new Error("User not logged in");
         } else if (response.status === 403) {
             useNavigate()("/");
@@ -128,9 +124,7 @@ async function getClient(id: string) {
 async function putClient(id: string, data: ClientInterface) {
     const user = await userManager.getUser();
     if (!user) {
-        userManager.removeUser().then();
-        userManager.revokeTokens().then();
-        userManager.signinRedirect().then();
+        userManager.signoutRedirect().then();
         throw new Error("User not logged in");
     }
     return fetch(`/api/admin/clients/${data.id}`, {
@@ -144,9 +138,7 @@ async function putClient(id: string, data: ClientInterface) {
         if (response.ok) {
             return response.json();
         } else if (response.status === 401) {
-            userManager.removeUser().then();
-            userManager.revokeTokens().then();
-            userManager.signinRedirect().then();
+            userManager.signoutRedirect().then();
             throw new Error("User not logged in");
         } else if (response.status === 403) {
             useNavigate()("/");

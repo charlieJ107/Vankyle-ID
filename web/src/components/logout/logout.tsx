@@ -4,29 +4,27 @@ import {userManager} from "../../auth/userManager";
 
 export function Logout() {
     useEffect(() => {
-        postLogout().then((res) => {
-            switch (res.status) {
-                case 200:
-                    userManager.removeUser().then();
-                    userManager.revokeTokens().then();
-                    window.location.href = "/";
-                    break;
-                case 302:
-                    userManager.removeUser().then();
-                    userManager.revokeTokens().then();
-                    window.location.href = res.redirectUrl;
-                    break;
-                default:
-                    userManager.removeUser().then();
-                    userManager.revokeTokens().then();
-                    window.location.href = "/";
-            }
-        });
+        userManager.signoutRedirect().then();
+        // postLogout().then((res) => {
+        //     switch (res.status) {
+        //         case 200:
+        //             userManager.signoutRedirect().then();
+        //             window.location.href = "/";
+        //             break;
+        //         case 302:
+        //             userManager.signoutRedirect().then();
+        //             window.location.href = res.redirectUrl;
+        //             break;
+        //         default:
+        //             userManager.signoutRedirect().then();
+        //             window.location.href = "/";
+        //     }
+        // });
     });
     return (<Loading/>);
 }
 
-function postLogout() {
+async function postLogout() {
     return fetch(`/api/logout`, {
         method: "POST",
         credentials: "include"

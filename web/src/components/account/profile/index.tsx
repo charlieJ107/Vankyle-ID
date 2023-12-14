@@ -10,6 +10,7 @@ import {EditInfo} from "./editInfo";
 import {EditPhone} from "./editPhone";
 import {Loading} from "../../shared/loading";
 import {getUserInfo, UserInfo} from "./profileUtils";
+import {userManager} from "../../../auth/userManager";
 
 export function Profile() {
     const [userInfo, setUserInfo] = React.useState<UserInfo | null>(null);
@@ -23,7 +24,10 @@ export function Profile() {
         getUserInfo().then((updatedProfile) => {
             setUserInfo(updatedProfile);
             setStatus("idle");
-        }).catch(() => {
+        }).catch((e) => {
+            if (e.message === "Failed to get user info") {
+                userManager.signoutRedirect().then();
+            }
             setStatus("error");
         });
     }, [setUserInfo, setStatus]);

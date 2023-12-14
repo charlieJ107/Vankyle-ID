@@ -106,9 +106,7 @@ async function getUser(userId: string) {
         if (response.ok) {
             return response.json();
         } else if (response.status === 401) {
-            userManager.removeUser().then();
-            userManager.revokeTokens().then();
-            userManager.signinRedirect().then();
+            userManager.signoutRedirect().then();
             throw new Error("User not logged in");
         } else if (response.status === 403 || response.status === 404) {
             return {
@@ -138,9 +136,7 @@ async function putUser(userId: string, user: UserInterface) {
         if (response.ok) {
             return response.json();
         } else if (response.status === 401) {
-            userManager.removeUser().then();
-            userManager.revokeTokens().then();
-            userManager.signinRedirect().then();
+            userManager.signoutRedirect().then();
             throw new Error("User not logged in");
         } else if (response.status === 403 || response.status === 404) {
             return {
