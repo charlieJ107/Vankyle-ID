@@ -59,7 +59,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
-        id: meta
+        id: api_meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}/vankyle-id-api
@@ -69,8 +69,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.api_meta.outputs.tags }}
+          labels: ${{ steps.api_meta.outputs.labels }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -137,7 +137,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
-        id: meta
+        id: web_meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}/vankyle-id-web
@@ -147,8 +147,8 @@ jobs:
         with:
           context: web
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.web_meta.outputs.tags }}
+          labels: ${{ steps.web_meta.outputs.labels }}
 
   publish-docker-nginx:
     runs-on: ubuntu-latest
@@ -163,7 +163,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract metadata (tags, labels) for Docker
-        id: meta
+        id: nginx_meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}/vankyle-id-nginx
@@ -173,6 +173,6 @@ jobs:
         with:
           context: web
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.nginx_meta.outputs.tags }}
+          labels: ${{ steps.nginx_meta.outputs.labels }}
 
