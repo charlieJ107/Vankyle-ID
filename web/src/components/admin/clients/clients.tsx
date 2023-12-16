@@ -26,7 +26,7 @@ export function Clients() {
             {error && <Alert variant={"danger"}>{t("admin.client.error")} {error}</Alert>}
             <div>
                 <Button className={"my-3"} variant={"primary"}
-                        onClick={()=>navigate("/admin/clients/create")}>{t("admin.client.create")}</Button>
+                        onClick={()=>navigate("/admin/clients/create")}>{t("admin.client.create.title")}</Button>
             </div>
             <Table striped bordered hover>
                 <thead>

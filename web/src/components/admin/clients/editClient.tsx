@@ -108,7 +108,7 @@ async function getClient(id: string) {
             userManager.signoutRedirect().then();
             throw new Error("User not logged in");
         } else if (response.status === 403) {
-            useNavigate()("/");
+
         } else if (response.status === 404) {
             return {
                 status: 404,
@@ -138,10 +138,9 @@ async function putClient(id: string, data: ClientInterface) {
         if (response.ok) {
             return response.json();
         } else if (response.status === 401) {
-            userManager.signoutRedirect().then();
-            throw new Error("User not logged in");
+            return {status: 401}
         } else if (response.status === 403) {
-            useNavigate()("/");
+            return {status: 403}
         } else if (response.status === 404) {
             return {
                 status: 404,

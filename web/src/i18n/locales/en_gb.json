@@ -288,13 +288,17 @@
       "client_secret": "Client Secret",
       "name": "Name",
       "actions": "Actions",
-      "create": "Create Client",
+
       "edit": "Edit",
       "delete": "Delete",
       "error": "Something went wrong. ",
       "detail": {
         "title": "Client Details",
         "success": "Client updated successfully."
+      },
+      "create": {
+        "title": "Create Client",
+        "success": "Client created successfully."
       },
       "form": {
         "id": "ID",
