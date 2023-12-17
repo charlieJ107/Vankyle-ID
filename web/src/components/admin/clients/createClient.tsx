@@ -1,7 +1,7 @@
 import {Loading} from "../../shared/loading";
 import {ClientForm} from "./clientForm";
 import {Alert} from "react-bootstrap";
-import {useNavigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {ClientInterface, JwsAlgorithm} from "./clientInterface";
 import {userManager} from "../../../auth/userManager";
@@ -45,7 +45,8 @@ export function CreateClient() {
                 setClient(response.client);
                 setStatus("success");
                 setError(null);
-            } else if (response.status === 4000) {
+            } else if (response.status >= 4000) {
+                // TODO: Check for specific errors
                 setStatus("failed");
                 setError(response.message);
             } else {
@@ -60,15 +61,18 @@ export function CreateClient() {
 
     const {t} = useTranslation();
     const navigate = useNavigate();
-    if (client && (status === "idle" || status === "success" || status === "failed")) {
+    if (client && (status === "idle" || status === "failed")) {
         return (
             <div>
-                <h1>{t("admin.client.create")}</h1>
+                <h1>{t("admin.client.create.title")}</h1>
                 {error && <Alert variant="danger">{error}</Alert>}
+                {/*{status === "success" && <Alert variant="success">{t("admin.client.create.success")}</Alert>}*/}
                 <ClientForm client={client} setClient={setClient} onSubmit={onSubmit}
-                            onReset={() => navigate("/admin/client")}/>
+                            onReset={() => navigate("/admin/clients")}/>
             </div>
         );
+    } else if (client && status === "success"){
+        return <Navigate to={`/admin/clients/${client.id}`}/>
     } else {
         return <Loading/>;
     }
@@ -77,7 +81,6 @@ export function CreateClient() {
 async function createClient(data: ClientInterface) {
     const user = await userManager.getUser();
     if (!user) {
-        // TODO: Use sign out when backend supports it
         userManager.signoutRedirect().then();
         throw new Error("User not logged in");
     }

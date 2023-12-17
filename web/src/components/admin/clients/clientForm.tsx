@@ -38,6 +38,12 @@ export function ClientForm({client, setClient, onSubmit, onReset}: {
                 }}/>
             </Form.Group>
             <Form.Group className={"mb-3"}>
+                <Form.Label>{t("admin.client.form.name")}</Form.Label>
+                <Form.Control type="text" value={client.clientName || ""} onChange={(e) => {
+                    setClient({...client, clientName: e.target.value});
+                }}/>
+            </Form.Group>
+            <Form.Group className={"mb-3"}>
                 <Form.Label>{t("admin.client.form.client_secret")}</Form.Label>
                 <Form.Control type="text" value={client.clientSecret ? client.clientSecret : ""}
                               placeholder={t("admin.client.form.secret_not_displayed")!}
