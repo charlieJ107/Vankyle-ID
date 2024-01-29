@@ -29,7 +29,8 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize ->
                         authorize.requestMatchers(
-                                        "/static/**", "/favicon.ico",
+
+                                       "/static/**", "/favicon.ico",
                                         "/*.json", "/*.ico", "/*.png", "/*.txt",
                                         apiPath + "/login", "/login",
                                         apiPath + "/register", "/register",

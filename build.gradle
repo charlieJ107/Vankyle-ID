@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.security:spring-security-oauth2-authorization-server:1.2.0'
+    implementation 'org.springframework.security:spring-security-oauth2-authorization-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -33,13 +33,14 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'com.h2database:h2'
+
 }
 
 tasks.named('test') {
