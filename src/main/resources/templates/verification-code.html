@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <title th:text="${title}"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style th:replace="layout::style"></style>
+    <style th:replace="email_layout::style"></style>
 </head>
 <body>
-<header th:replace="~{layout::header}">
+<header th:replace="~{email_layout::header}">
 </header>
 <main>
     <h1 th:text="${title}"></h1>
@@ -22,7 +22,7 @@
     <p th:text="#{email.regards}"></p>
     <p th:text="#{email.team}">Vankyle ID Team</p>
 </main>
-<footer th:replace="layout::footer">
+<footer th:replace="email_layout::footer">
 </footer>
 
 </body>
