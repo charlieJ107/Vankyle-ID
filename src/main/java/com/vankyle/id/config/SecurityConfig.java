@@ -29,15 +29,26 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize ->
                         authorize.requestMatchers(
-                                        "/static/**", "/favicon.ico",
-                                        "/*.json", "/*.ico", "/*.png", "/*.txt",
-                                        apiPath + "/login", "/login",
-                                        apiPath + "/register", "/register",
-                                        apiPath + "/confirm-email", "/confirm-email",
-                                        apiPath + "/reset-password", "/reset-password",
-                                        apiPath + "/forgot-password", "/forgot-password",
-                                        "/error"
+                                        apiPath + "/login",
+                                        apiPath + "/register",
+                                        apiPath + "/confirm-email",
+                                        apiPath + "/reset-password",
+                                        apiPath + "/forgot-password"
                                 ).permitAll()
+                                .requestMatchers(
+                                        "/login",
+                                        "/register",
+                                        "/confirm-email",
+                                        "/reset-password",
+                                        "/forgot-password"
+                                ).permitAll()
+                                .requestMatchers(
+                                        "/static/**", "/favicon.ico",
+                                        "/*.json", "/*.txt",
+                                        "/*.ico", "/*.png",
+                                        "/error"
+                                )
+                                .permitAll()
                                 .requestMatchers(apiPath + "/admin/**").hasRole("admin")
                                 .anyRequest().authenticated())
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer

@@ -53,8 +53,6 @@ import java.util.UUID;
 @EnableConfigurationProperties(ApplicationProperties.class)
 public class AuthorizationServerConfig {
     private static final Log logger = LogFactory.getLog(AuthorizationServerConfig.class);
-    @Value("${vankyle.id.base-url}")
-    private String base_url;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -66,7 +64,7 @@ public class AuthorizationServerConfig {
                 new OAuth2AuthorizationServerConfigurer();
         authorizationServerConfigurer
                 .authorizationEndpoint(authorizationEndpoint ->
-                        authorizationEndpoint.consentPage(base_url+"/consent")
+                        authorizationEndpoint.consentPage("/consent")
                                 .authorizationResponseHandler(new JsonResponseAuthorizationEndpointHandler())
                                 .errorResponseHandler(new JsonResponseAuthorizationEndpointHandler())
                 )
@@ -87,7 +85,7 @@ public class AuthorizationServerConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .exceptionHandling(exceptions ->
                         exceptions.authenticationEntryPoint(
-                                new JsonResponseAuthenticationEntryPoint(base_url+ "/login")
+                                new JsonResponseAuthenticationEntryPoint( "/login")
                         )
                 )
                 .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
@@ -146,6 +144,9 @@ public class AuthorizationServerConfig {
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
+
+    @Value("${vankyle.id.base-url}")
+    private String base_url;
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
