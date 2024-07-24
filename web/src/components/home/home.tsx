@@ -1,6 +1,6 @@
 import {useTranslation} from "react-i18next";
 import Layout from "@/components/layout/layout.tsx";
-import LoginButtonGroup from "@/components/home/login-button-group.tsx";
+import LoginButtonGroup from "@/components/common/login-button-group.tsx";
 
 function Home() {
     const {t} = useTranslation()

@@ -3,5 +3,10 @@
   "register": "注册",
   "app": "Vankyle ID",
   "description": "一个账号，所有Vankyle服务",
-  "language": "语言"
+  "language": "语言",
+  "email": "邮箱",
+  "password": "密码",
+  "username": "用户名",
+  "confirmPassword": "确认密码",
+  "forgotPassword": "忘记密码"
 }

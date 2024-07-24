@@ -3,5 +3,10 @@
   "register": "Register",
   "app": "Vankyle ID",
   "description": "One account for all Vankyle services",
-  "language": "Language"
+  "language": "Language",
+  "email": "Email",
+  "password": "Password",
+  "username": "Username",
+  "confirmPassword": "Confirm Password",
+  "forgotPassword": "Forgot Password"
 }

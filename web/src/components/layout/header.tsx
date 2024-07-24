@@ -1,6 +1,6 @@
 import {Separator} from "@/components/ui/separator.tsx";
 import {useTranslation} from "react-i18next";
-import LoginButtonGroup from "@/components/home/login-button-group.tsx";
+import LoginButtonGroup from "@/components/common/login-button-group.tsx";
 
 function Header() {
     const {t} = useTranslation();
