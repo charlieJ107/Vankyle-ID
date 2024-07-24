@@ -116,7 +116,6 @@ public class JpaUserDetailsManager implements UserDetailsManager {
                 .accountLocked(!userEntity.isAccountNonLocked())
                 .credentialsExpired(!userEntity.isCredentialsNonExpired())
                 .disabled(!userEntity.isEnabled())
-                .authorities(userEntity.getAuthorities())
                 .passwordEncoder(passwordEncoder::encode)
                 .build();
     }
