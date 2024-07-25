@@ -1,18 +1,18 @@
 import Header from "@/components/layout/header.tsx";
 import Footer from "@/components/layout/footer.tsx";
 
-function Layout({children}: { children: React.ReactNode }) {
+function HomeLayout({children}: { children: React.ReactNode }) {
     return (
-        <div className={"p-10 h-screen"}>
+        <div className={"h-screen"}>
             <div className={"flex flex-col h-full"}>
-                <Header/>
+                <Header className={"mx-16 mt-10"}/>
                 <main className={"flex flex-grow flex-col justify-center text-center"}>
                     {children}
                 </main>
-                <Footer/>
+                <Footer className={"mb-10 mx-20"}/>
             </div>
         </div>
     );
 }
 
-export default Layout;
+export default HomeLayout;
