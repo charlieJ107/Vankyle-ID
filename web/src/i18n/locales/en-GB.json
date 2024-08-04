@@ -8,5 +8,13 @@
   "password": "Password",
   "username": "Username",
   "confirmPassword": "Confirm Password",
-  "forgotPassword": "Forgot Password"
+  "forgotPassword": "Forgot Password",
+  "emailConfirm": "Email Confirmation",
+  "emailConfirmDescription": "Please check your email to confirm your account",
+  "emailConfirmResend": "Resend Email Confirmation",
+  "emailConfirmResendDescription": "If you did not receive the email, please click the button below to resend the email",
+  "emailConfirmResendSuccess": "Email confirmation has been sent",
+  "emailConfirmResendError": "Failed to resend email confirmation",
+  "emailConfirmSuccess": "Email confirmation successful",
+  "emailConfirmError": "Failed to confirm email"
 }

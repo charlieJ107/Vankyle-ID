@@ -8,5 +8,13 @@
   "password": "密码",
   "username": "用户名",
   "confirmPassword": "确认密码",
-  "forgotPassword": "忘记密码"
+  "forgotPassword": "忘记密码",
+  "emailConfirm": "邮箱确认",
+  "emailConfirmDescription": "请检查您的电子邮件以确认您的帐户",
+  "emailConfirmResend": "重新发送电子邮件确认",
+  "emailConfirmResendDescription": "如果您没有收到电子邮件，请单击下面的按钮重新发送电子邮件",
+  "emailConfirmResendSuccess": "电子邮件确认已发送",
+  "emailConfirmResendError": "重新发送电子邮件确认失败",
+  "emailConfirmSuccess": "电子邮件确认成功",
+  "emailConfirmError": "确认电子邮件失败"
 }

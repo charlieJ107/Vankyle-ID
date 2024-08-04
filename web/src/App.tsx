@@ -3,6 +3,8 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Home from "@/components/home/home.tsx";
 import Login from "@/components/login/login.tsx";
 import Register from "@/components/register/register.tsx";
+import EmailConfirm from "@/components/register/email-confirm.tsx";
+import ConfirmEmail, {confirmEmailLoader} from "@/components/register/confirm-email.tsx";
 
 const router = createBrowserRouter([
     {
@@ -16,6 +18,15 @@ const router = createBrowserRouter([
     {
         path: "/register",
         element: <Register/>
+    },
+    {
+        path: "/email-confirm",
+        element: <EmailConfirm/>
+    },
+    {
+        path:"/confirm-email/:token",
+        element: <ConfirmEmail/>,
+        loader: confirmEmailLoader
     }
 
 ])
