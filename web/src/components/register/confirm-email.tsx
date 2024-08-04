@@ -26,7 +26,7 @@ function ConfirmEmail() {
     const {success} = useLoaderData() as { success: boolean };
     const {t} = useTranslation();
     let title = t("emailConfirmError");
-   if (success) {
+    if (success) {
         title = t("emailConfirmSuccess");
     }
     return (
@@ -38,7 +38,6 @@ function ConfirmEmail() {
                 <div className={"flex gap-5"}>
                     <Button variant={"default"}>{t("login")}</Button>
                 </div>
-
             </div>
         </DuoColLayout>
     );
