@@ -4,8 +4,10 @@ import Home from "@/components/home/home.tsx";
 import Login from "@/components/login/login.tsx";
 import Register from "@/components/register/register.tsx";
 import EmailConfirm from "@/components/register/email-confirm.tsx";
-import ConfirmEmail, {confirmEmailLoader} from "@/components/register/confirm-email.tsx";
-import Account from "@/components/account";
+import ConfirmEmail from "@/components/register/confirm-email.tsx";
+import {confirmEmailLoader} from "@/lib/confirm-email.ts";
+import Consent from "@/components/consent/Consent.tsx";
+import {consentLoader} from "@/lib/consent.ts";
 
 const router = createBrowserRouter([
     {
@@ -30,10 +32,10 @@ const router = createBrowserRouter([
         loader: confirmEmailLoader
     },
     {
-        path: "/account",
-        element: <Account/>
+        path:"/consent",
+        element: <Consent/>,
+        loader: consentLoader
     }
-
 ])
 
 function App() {

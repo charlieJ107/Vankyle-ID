@@ -1,11 +1,12 @@
 import Header from "@/components/layout/header.tsx";
 import Footer from "@/components/layout/footer.tsx";
+import React from "react";
 
-function HomeLayout({children}: { children: React.ReactNode }) {
+function HomeLayout({children, headerActions}: { children: React.ReactNode, headerActions?: React.ReactNode }) {
     return (
         <div className={"h-screen"}>
             <div className={"flex flex-col h-full"}>
-                <Header className={"mx-16 mt-10"}/>
+                <Header className={"mx-16 mt-10"} actions={headerActions}/>
                 <main className={"flex flex-grow flex-col justify-center text-center"}>
                     {children}
                 </main>

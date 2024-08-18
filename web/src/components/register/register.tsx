@@ -39,7 +39,7 @@ function Register() {
 
     return (
         <DuoColLayout>
-            <div className={"w-full flex flex-col p-12 md:p-48  justify-center"}>
+            <div className={"w-full flex flex-col p-12 md:p-40  justify-center"}>
                 <h2 className={"text-3xl my-5 font-extrabold tracking-tight text-primary"}>
                     {t("register")}
                 </h2>
