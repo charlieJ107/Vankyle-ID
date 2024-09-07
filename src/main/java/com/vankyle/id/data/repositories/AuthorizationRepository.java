@@ -25,7 +25,7 @@ public interface AuthorizationRepository extends JpaRepository<AuthorizationEnti
 
     Optional<AuthorizationEntity> findByDeviceCodeValue(String deviceCodeValue);
 
-    @Query("SELECT a FROM AuthorizationEntity a WHERE a.state = :token" +
+    @Query("SELECT a FROM authorizations a WHERE a.state = :token" +
             " OR a.authorizationCodeValue = :token" +
             " OR a.refreshTokenValue = :token " +
             " OR a.accessTokenValue = :token " +

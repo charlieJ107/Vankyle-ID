@@ -24,10 +24,7 @@ const FormSchema = z.object({
     }),
 });
 
-const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    // TODO: Implement login
-    console.log(data);
-};
+
 
 
 function Login() {
@@ -40,7 +37,37 @@ function Login() {
         },
     });
 
-// TODO Mobile Landscape
+    const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+        const reqParams = new URLSearchParams();
+        reqParams.append("username", data.username);
+        reqParams.append("password", data.password);
+        // Merge http://localhost:8080/api/login with reqParams
+        const reqUrl = new URL("http://localhost:8080/api/login");
+        reqUrl.search = reqParams.toString();
+
+        const response = await fetch(reqUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "x-www-form-urlencoded",
+                "Accept": "application/json",
+            },
+            redirect:"manual",
+        });
+        console.log(response);
+        if (response.ok) {
+            const location = (await response.json()).redirectUrl;
+            if (location) {
+                window.location.replace(location);
+            } else {
+                window.location.replace("/");
+            }
+        } else {
+            console.log("Login failed");
+            form.setError("root", {
+                message: t("loginError")
+            });
+        }
+    };
     return (
         <DuoColLayout>
             <div className={"w-full flex flex-col p-12 md:p-48  justify-center"}>
@@ -75,6 +102,7 @@ function Login() {
                                 </FormItem>
                             )}
                         />
+                        <FormMessage>{form.formState.errors.root?.message}</FormMessage>
                         <div className={"flex justify-between"}>
                             <LoginButtonGroup/>
                             < Button variant={"link"}>{t("forgotPassword")}</Button>

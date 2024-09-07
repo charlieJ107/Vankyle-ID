@@ -1,5 +1,6 @@
 package com.vankyle.id.data.entities;
 
+import com.vankyle.id.data.converters.AuthorityConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.apache.commons.logging.Log;
@@ -16,7 +17,7 @@ import java.util.Set;
  * which implemented by {@link org.springframework.security.core.userdetails.User
  */
 @Data
-@Entity
+@Entity(name = "users")
 public class UserEntity implements Serializable{
 
     @Serial
@@ -31,6 +32,7 @@ public class UserEntity implements Serializable{
     private String username;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @Convert(converter = AuthorityConverter.class)
     private Set<GrantedAuthority> authorities;
 
     private boolean accountNonExpired;

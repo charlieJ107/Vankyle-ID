@@ -16,5 +16,11 @@
   "emailConfirmResendSuccess": "电子邮件确认已发送",
   "emailConfirmResendError": "重新发送电子邮件确认失败",
   "emailConfirmSuccess": "电子邮件确认成功",
-  "emailConfirmError": "确认电子邮件失败"
+  "emailConfirmError": "确认电子邮件失败",
+  "loginError": "登录失败",
+  "usernameValidation": "用户名必须介于3到20个字符之间",
+  "emailValidation": "无效的电子邮件地址",
+  "passwordValidation": "密码必须至少为8个字符",
+  "confirmPasswordValidation": "密码不匹配",
+  "emailExists": "电子邮件已存在"
 }

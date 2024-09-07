@@ -14,7 +14,7 @@ import java.util.Set;
  * The entity class for the {@link OAuth2Authorization}
  */
 @Data
-@Entity
+@Entity(name = "authorizations")
 public class AuthorizationEntity {
     @Id
     @GeneratedValue

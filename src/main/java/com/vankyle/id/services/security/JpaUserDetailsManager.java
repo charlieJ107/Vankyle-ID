@@ -46,6 +46,10 @@ public class JpaUserDetailsManager implements UserDetailsManager {
 
     @Override
     public void createUser(UserDetails user) {
+        // Check if user exists
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("User " + user.getUsername() + " already exists");
+        }
         userRepository.save(toUserEntity(user, new UserEntity()));
     }
 
@@ -109,15 +113,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
         if (userEntity == null) {
             throw new UsernameNotFoundException("User " + username + " not found");
         }
-        return User.withUsername(username)
-                .password(userEntity.getPassword())
-                .authorities(userEntity.getAuthorities())
-                .accountExpired(!userEntity.isAccountNonExpired())
-                .accountLocked(!userEntity.isAccountNonLocked())
-                .credentialsExpired(!userEntity.isCredentialsNonExpired())
-                .disabled(!userEntity.isEnabled())
-                .passwordEncoder(passwordEncoder::encode)
-                .build();
+        return toUserDetails(userEntity);
     }
 
     protected UserDetails toUserDetails(UserEntity userEntity) {
@@ -129,7 +125,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
                 .credentialsExpired(!userEntity.isCredentialsNonExpired())
                 .disabled(!userEntity.isEnabled())
                 .authorities(userEntity.getAuthorities())
-                .passwordEncoder(passwordEncoder::encode)
+//                .passwordEncoder(passwordEncoder::encode)
                 .build();
     }
 
@@ -139,7 +135,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
         userEntity.setAccountNonExpired(userDetails.isAccountNonExpired());
         userEntity.setAccountNonLocked(userDetails.isAccountNonLocked());
         userEntity.setCredentialsNonExpired(userDetails.isCredentialsNonExpired());
-        userEntity.setEnabled(!userDetails.isEnabled());
+        userEntity.setEnabled(userDetails.isEnabled());
         userEntity.setAuthorities(userDetails.getAuthorities().stream().map(grantedAuthority ->
                 (GrantedAuthority) grantedAuthority
         ).collect(Collectors.toSet()));

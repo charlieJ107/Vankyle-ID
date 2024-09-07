@@ -16,5 +16,11 @@
   "emailConfirmResendSuccess": "Email confirmation has been sent",
   "emailConfirmResendError": "Failed to resend email confirmation",
   "emailConfirmSuccess": "Email confirmation successful",
-  "emailConfirmError": "Failed to confirm email"
+  "emailConfirmError": "Failed to confirm email",
+  "loginError": "Failed to login",
+  "usernameValidation": "Username must be between 3 and 20 characters",
+  "emailValidation": "Invalid email address",
+  "passwordValidation": "Password must be at least 8 characters",
+  "confirmPasswordValidation": "Passwords do not match",
+  "emailExists": "Email already exists"
 }

@@ -13,7 +13,7 @@ import java.util.Set;
  * Entity for {@link org.springframework.security.oauth2.server.authorization.client.RegisteredClient}
  */
 @Data
-@Entity
+@Entity(name = "clients")
 public class ClientEntity {
 
     @Id
