@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
@@ -14,12 +14,12 @@
             Sign in to your account
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600 max-w">
-            Application wants to login to your vankyle ID account.
+            <span th:text="${clientName}">Application</span>  wants to login to your <span th:text="${appName}">Vankyle ID</span> account.
         </p>
     </div>
 
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form class="space-y-6" action="#" method="POST">
+        <form class="space-y-6" th:action="@{/api/login}" method="POST">
             <div>
                 <label for="email" class="block text-sm font-medium leading-6 text-gray-900">
                     Email address
@@ -36,7 +36,7 @@
                         Password
                     </label>
                     <div class="text-sm">
-                        <a href="#" class="font-semibold text-blue-600 hover:text-blue-500">
+                        <a href="/forgot-password" class="font-semibold text-blue-600 hover:text-blue-500">
                             Forgot password?
                         </a>
                     </div>
@@ -57,33 +57,30 @@
 
         <p class="mt-10 text-center text-sm text-gray-500">
             Don't have an account?
-            <a href="#" class="font-semibold leading-6 text-blue-600 hover:text-blue-500">
+            <a href="/register" class="font-semibold leading-6 text-blue-600 hover:text-blue-500">
                 Sign up
             </a>
         </p>
 
-        <div class="relative my-5">
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="w-full border-t border-gray-300"></div>
-            </div>
-            <div class="relative flex justify-center">
+        <div th:if="${socialLogins}">
+            <div class="relative my-5">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center">
             <span class="bg-white px-2 text-sm text-gray-500">
                 or continue with
             </span>
+                </div>
             </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-            <a href="#"
-               class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent">
-                <img src="/images/google.svg" alt="Google Account">
-                <span class="text-sm font-semibold leading-6">Google</span>
-            </a>
-
-            <a href="#"
-               class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent">
-                <img src="/images/github.svg" alt="GitHub Account">
-                <span class="text-sm font-semibold leading-6">GitHub</span>
-            </a>
+            <div class="flex gap-3 w-full justify-center flex-wrap">
+                <a th:each="socialLogin, iterStat : ${socialLogins}"
+                   th:href="${socialLogin.url}"
+                   class="flex w-full justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent">
+                    <img th:src="${socialLogin.imageUrl}" th:alt="${socialLogin.name} Account">
+                    <span class="text-sm font-semibold leading-6" th:text="${socialLogin.name}">Social Login</span>
+                </a>
+            </div>
         </div>
     </div>
 </main>
