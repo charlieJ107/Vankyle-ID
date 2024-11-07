@@ -3,10 +3,7 @@ package com.vankyle.id.data.entities;
 import com.vankyle.id.data.converters.AuthorityConverter;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -25,7 +22,6 @@ public class UserEntity implements Serializable{
     @Id
     @GeneratedValue
     private Long id;
-    private static final Log logger = LogFactory.getLog(User.class);
 
     private String password;
 

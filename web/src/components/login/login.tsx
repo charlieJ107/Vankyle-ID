@@ -41,7 +41,6 @@ function Login() {
         const reqParams = new URLSearchParams();
         reqParams.append("username", data.username);
         reqParams.append("password", data.password);
-        // Merge http://localhost:8080/api/login with reqParams
         const reqUrl = new URL("http://localhost:8080/api/login");
         reqUrl.search = reqParams.toString();
 
